@@ -1,1 +1,39 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #111;
+  color: #fff;
+}
 
+header {
+  background: #222;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+nav button {
+  margin: 0 0.5rem;
+  background: #444;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #333;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.hidden { display: none; }
+
+.dark { background: #000; color: #eee; }
