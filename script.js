@@ -1,230 +1,156 @@
-function showSection(id) {
-  // Oculta todas las secciones
-  document.querySelectorAll("main section").forEach(sec => {
-    sec.classList.add("hidden");
-  });
-  // Muestra solo la sección seleccionada
-  const target = document.getElementById(id);
-  if (target) {
-    target.classList.remove("hidden");
-  }
+// Estado Global
+let mediaLibrary = JSON.parse(localStorage.getItem('vico_media_lib')) || [];
+
+// Iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    renderLibrary();
+    
+    // Registrar SW
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(() => console.log('SW Registrado'));
+    }
+});
+
+// Guardar en LocalStorage
+function saveLibrary() {
+    localStorage.setItem('vico_media_lib', JSON.stringify(mediaLibrary));
+    renderLibrary();
 }
 
-// --- Biblioteca ---
-function addMovie() {
-  const title = document.getElementById("movieTitle").value;
-  const link = document.getElementById("movieLink").value;
-  if (!title || !link) return;
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.push({title, link});
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
+// Renderizar Biblioteca
+function renderLibrary() {
+    const container = document.getElementById('library');
+    container.innerHTML = '';
+
+    if (mediaLibrary.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">Biblioteca vacía. Añade contenido.</p>';
+        return;
+    }
+
+    mediaLibrary.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'media-card';
+        // Imagen por defecto si falla o no tiene
+        const img = item.cover || 'https://via.placeholder.com/300x450/000000/00fff7?text=VICO+MEDIA';
+        
+        card.innerHTML = `
+            <button class="delete-btn" onclick="deleteMedia(${index})">X</button>
+            <img src="${img}" class="card-img" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x450/000/fff?text=No+Cover'">
+            <div class="card-info">
+                <div class="card-title">${item.title}</div>
+            </div>
+            <div class="play-overlay" onclick="openPlayer('${item.url}', '${item.title.replace(/'/g, "\\'")}')">
+                <i data-lucide="play" size="48" style="color: white; fill: white;"></i>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+    lucide.createIcons();
 }
 
-function addBatch() {
-  const url = document.getElementById("batchUrl").value;
-  if (!url) return;
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  for (let i=1; i<=5; i++) {
-    movies.push({title: "Peli lote " + i, link: url + "/movie" + i});
-  }
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
+// Agregar Manualmente
+function addManualMedia() {
+    const title = document.getElementById('mediaTitle').value.trim();
+    const url = document.getElementById('mediaUrl').value.trim();
+    const cover = document.getElementById('mediaCover').value.trim();
+
+    if (!title || !url) return alert('Título y URL obligatorios');
+
+    mediaLibrary.push({ title, url, cover });
+    saveLibrary();
+    
+    // Limpiar inputs
+    document.getElementById('mediaTitle').value = '';
+    document.getElementById('mediaUrl').value = '';
+    document.getElementById('mediaCover').value = '';
+    toggleSection('add-manual'); // Cerrar panel
 }
 
-function renderMovies() {
-  const grid = document.getElementById("movieGrid");
-  grid.innerHTML = "";
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.forEach((m, i) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <h3>${m.title}</h3>
-      <button onclick="playMovie('${m.link}')">Play</button>
-      <button onclick="addFav('${m.title}','${m.link}')">Favorito</button>
-      <button onclick="deleteMovie(${i})">Borrar</button>
-    `;
-    grid.appendChild(card);
-  });
+// Procesar Lista M3U / Texto
+function processList() {
+    const text = document.getElementById('listInput').value;
+    const lines = text.split('\n');
+    let count = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('#EXTINF')) {
+            // Es formato M3U: #EXTINF:-1,Titulo \n URL
+            const titlePart = line.split(',')[1] || 'Sin Título';
+            const urlPart = lines[i+1]?.trim();
+            if (urlPart && urlPart.startsWith('http')) {
+                mediaLibrary.push({ title: titlePart, url: urlPart, cover: '' });
+                count++;
+                i++; // Saltar la linea de URL ya leída
+            }
+        } else if (line.startsWith('http')) {
+            // URL suelta
+            mediaLibrary.push({ title: `Video Importado ${count+1}`, url: line, cover: '' });
+            count++;
+        }
+    }
+
+    if (count > 0) {
+        saveLibrary();
+        alert(`${count} videos importados.`);
+        document.getElementById('listInput').value = '';
+        toggleSection('import-list');
+    } else {
+        alert('No se detectaron enlaces válidos.');
+    }
 }
 
-function playMovie(link) {
-  const player = window.open(link, "_blank");
-  player.focus();
+// Borrar
+function deleteMedia(index) {
+    if (confirm('¿Eliminar este video?')) {
+        mediaLibrary.splice(index, 1);
+        saveLibrary();
+    }
 }
 
-// --- Favoritos ---
-function addFav(title, link) {
-  let favs = JSON.parse(localStorage.getItem("favs")) || [];
-  favs.push({title, link});
-  localStorage.setItem("favs", JSON.stringify(favs));
-  renderFavs();
+// Mostrar/Ocultar Secciones
+function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
 }
 
-function renderFavs() {
-  const list = document.getElementById("favList");
-  list.innerHTML = "";
-  let favs = JSON.parse(localStorage.getItem("favs")) || [];
-  favs.forEach(f => {
-    const li = document.createElement("li");
-    li.textContent = f.title + " - " + f.link;
-    list.appendChild(li);
-  });
+// --- LOGICA DEL REPRODUCTOR INTEGRADO ---
+function openPlayer(url, title) {
+    const modal = document.getElementById('playerModal');
+    const container = document.getElementById('videoContainer');
+    const titleEl = document.getElementById('playerTitle');
+    
+    titleEl.innerText = title;
+    container.innerHTML = ''; // Limpiar anterior
+
+    let content = '';
+
+    // Detectar tipo de video
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        // Extraer ID de YouTube
+        let videoId = url.split('v=')[1];
+        if (!videoId && url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1];
+        const amp = videoId ? videoId.indexOf('&');
+        if (amp !== -1) videoId = videoId.substring(0, amp);
+        
+        content = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
+    } 
+    else if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
+        // Video Nativo
+        content = `<video src="${url}" controls autoplay style="width:100%; height:100%"></video>`;
+    } 
+    else {
+        // Iframe genérico (para embeds, wiseplay streams si lo soportan, etc)
+        content = `<iframe src="${url}" allowfullscreen></iframe>`;
+    }
+
+    container.innerHTML = content;
+    modal.classList.remove('hidden');
 }
 
-function deleteMovie(index) {
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.splice(index, 1);
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
+function closePlayer() {
+    const modal = document.getElementById('playerModal');
+    const container = document.getElementById('videoContainer');
+    container.innerHTML = ''; // Parar video
+    modal.classList.add('hidden');
 }
-
-// --- Configuración ---
-function toggleDark() {
-  document.body.classList.toggle("dark");
-}
-
-function downloadJSON() {
-  const data = {
-    movies: JSON.parse(localStorage.getItem("movies")) || [],
-    favs: JSON.parse(localStorage.getItem("favs")) || []
-  };
-  const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "vicomedia.json";
-  a.click();
-}
-
-function uploadJSON(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = JSON.parse(e.target.result);
-    localStorage.setItem("movies", JSON.stringify(data.movies));
-    localStorage.setItem("favs", JSON.stringify(data.favs));
-    renderMovies();
-    renderFavs();
-  };
-  reader.readAsText(file);
-}
-
-// --- Chat AI (simulado) ---
-function sendChat() {
-  const input = document.getElementById("chatInput").value;
-  const chatWindow = document.getElementById("chatWindow");
-  const msg = document.createElement("p");
-  msg.textContent = "Tú: " + input;
-  chatWindow.appendChild(msg);
-
-  // Simulación de respuesta
-  const reply = document.createElement("p");
-  reply.textContent = "AI: (simulado) No conectado a API real. Aquí iría la búsqueda de '" + input + "'";
-  chatWindow.appendChild(reply);
-}
-
-// --- Inicialización ---
-renderMovies();
-renderFavs();
-
-function addMovie() {
-  const title = document.getElementById("movieTitle").value;
-  const link = document.getElementById("movieLink").value;
-  if (!title || !link) return;
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.push({title, link});
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
-}
-
-function addBatch() {
-  const url = document.getElementById("batchUrl").value;
-  if (!url) return;
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  for (let i=1; i<=5; i++) {
-    movies.push({title: "Peli lote " + i, link: url + "/movie" + i});
-  }
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
-}
-
-function renderMovies() {
-  const grid = document.getElementById("movieGrid");
-  grid.innerHTML = "";
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.forEach((m, i) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <h3>${m.title}</h3>
-      <button onclick="playMovie('${m.link}')">Play</button>
-      <button onclick="addFav('${m.title}','${m.link}')">Favorito</button>
-      <button onclick="deleteMovie(${i})">Borrar</button>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function playMovie(link) {
-  const player = window.open(link, "_blank");
-  player.focus();
-}
-
-function addFav(title, link) {
-  let favs = JSON.parse(localStorage.getItem("favs")) || [];
-  favs.push({title, link});
-  localStorage.setItem("favs", JSON.stringify(favs));
-  renderFavs();
-}
-
-function renderFavs() {
-  const list = document.getElementById("favList");
-  list.innerHTML = "";
-  let favs = JSON.parse(localStorage.getItem("favs")) || [];
-  favs.forEach(f => {
-    const li = document.createElement("li");
-    li.textContent = f.title + " - " + f.link;
-    list.appendChild(li);
-  });
-}
-
-function deleteMovie(index) {
-  let movies = JSON.parse(localStorage.getItem("movies")) || [];
-  movies.splice(index, 1);
-  localStorage.setItem("movies", JSON.stringify(movies));
-  renderMovies();
-}
-
-function toggleDark() {
-  document.body.classList.toggle("dark");
-}
-
-function downloadJSON() {
-  const data = {
-    movies: JSON.parse(localStorage.getItem("movies")) || [],
-    favs: JSON.parse(localStorage.getItem("favs")) || []
-  };
-  const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "vicomedia.json";
-  a.click();
-}
-
-function uploadJSON(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = JSON.parse(e.target.result);
-    localStorage.setItem("movies", JSON.stringify(data.movies));
-    localStorage.setItem("favs", JSON.stringify(data.favs));
-    renderMovies();
-    renderFavs();
-  };
-  reader.readAsText(file);
-}
-
-function sendChat()
