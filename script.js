@@ -13,6 +13,17 @@ function addMovie() {
   renderMovies();
 }
 
+function addBatch() {
+  const url = document.getElementById("batchUrl").value;
+  if (!url) return;
+  let movies = JSON.parse(localStorage.getItem("movies")) || [];
+  for (let i=1; i<=5; i++) {
+    movies.push({title: "Peli lote " + i, link: url + "/movie" + i});
+  }
+  localStorage.setItem("movies", JSON.stringify(movies));
+  renderMovies();
+}
+
 function renderMovies() {
   const grid = document.getElementById("movieGrid");
   grid.innerHTML = "";
@@ -90,5 +101,6 @@ function uploadJSON(event) {
   reader.readAsText(file);
 }
 
-renderMovies();
-renderFavs();
+function sendChat() {
+  const input = document.getElementById("chatInput").value;
+  const chatWindow = document.getElementById("chatWindow");
