@@ -7,55 +7,386 @@
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="./icon.png">
-    <link rel="stylesheet" href="./style.css">
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ESTILOS (CSS) */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111;
+            --primary: #00fff7; /* Cyan */
+            --secondary: #ff00ff; /* Magenta */
+            --text: #fff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding-bottom: 80px; /* Espacio para scroll */
+        }
+
+        h1, h2, h3, .font-cyber { font-family: 'Orbitron', sans-serif; }
+        .hidden { display: none !important; }
+
+        /* Header */
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            background: linear-gradient(180deg, rgba(0,255,247,0.1) 0%, rgba(0,0,0,0) 100%);
+            box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .neon-text { color: var(--primary); text-shadow: 0 0 10px var(--primary); font-weight: bold; }
+
+        /* Panel de Control */
+        .control-panel { 
+            padding: 30px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            align-items: center; 
+        }
+
+        /* Botones Neón */
+        button { cursor: pointer; user-select: none; }
+        
+        .btn-neon, .btn-neon-alt {
+            font-family: 'Orbitron', sans-serif;
+            padding: 12px 24px;
+            border: 2px solid;
+            background: transparent;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            transition: 0.2s;
+        }
+
+        .btn-neon { 
+            border-color: var(--primary); 
+            color: var(--primary); 
+            box-shadow: 0 0 10px var(--primary), inset 0 0 5px var(--primary);
+        }
+        .btn-neon:active { background: var(--primary); color: #000; }
+
+        .btn-neon-alt { 
+            border-color: var(--secondary); 
+            color: var(--secondary); 
+            box-shadow: 0 0 10px var(--secondary), inset 0 0 5px var(--secondary);
+        }
+        .btn-neon-alt:active { background: var(--secondary); color: #000; }
+
+        /* Secciones de Input */
+        .input-section {
+            background: #151515;
+            margin: 0 20px 20px;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, textarea {
+            width: 100%;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Grid Biblioteca */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .media-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #333;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .media-card:active { transform: scale(0.98); }
+
+        .card-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #222;
+            display: block;
+        }
+
+        .card-info { padding: 10px; background: rgba(0,0,0,0.8); position: absolute; bottom: 0; width: 100%; }
+        .card-title { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white; }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px; right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .play-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.3);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .media-card:hover .play-overlay { opacity: 1; }
+
+        /* Modal Reproductor */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 2000;
+            display: flex; flex-direction: column;
+        }
+        .modal-header {
+            padding: 15px;
+            background: #111;
+            border-bottom: 1px solid var(--primary);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .btn-close { background: transparent; color: var(--secondary); border: none; font-size: 24px; padding: 0 10px; }
+        .video-container { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; }
+        iframe, video { width: 100%; height: 100%; border: none; max-height: 80vh; }
+    </style>
 </head>
 <body>
 
     <header>
         <div class="logo">
-            <i data-lucide="play-circle" class="neon-icon"></i>
+            <i data-lucide="play-circle" style="color: var(--secondary);"></i>
             <h1>VICO <span class="neon-text">MEDIA</span></h1>
         </div>
-        <button id="installBtn" class="hidden">Instalar App</button>
     </header>
 
     <div class="control-panel">
-        <button onclick="toggleSection('add-manual')" class="btn-neon"><i data-lucide="plus"></i> Agregar URL</button>
-        <button onclick="toggleSection('import-list')" class="btn-neon-alt"><i data-lucide="list"></i> Importar Lista</button>
+        <button onclick="toggleSection('add-manual')" class="btn-neon">
+            <i data-lucide="plus"></i> Agregar URL
+        </button>
+        <button onclick="toggleSection('import-list')" class="btn-neon-alt">
+            <i data-lucide="list"></i> Importar Lista
+        </button>
     </div>
 
     <div id="add-manual" class="input-section hidden">
-        <h3>Agregar Multimedia</h3>
-        <input type="text" id="mediaTitle" placeholder="Título (ej: Matrix)">
-        <input type="text" id="mediaUrl" placeholder="URL del Video (mp4, m3u8, youtube...)">
-        <input type="text" id="mediaCover" placeholder="URL de la Carátula (Opcional)">
+        <h3 class="font-cyber" style="margin-top:0">Agregar Video</h3>
+        <input type="text" id="mediaTitle" placeholder="Título (ej: Mi Video)">
+        <input type="text" id="mediaUrl" placeholder="URL (mp4, youtube, m3u8...)">
+        <input type="text" id="mediaCover" placeholder="URL Imagen (Opcional)">
         <button onclick="addManualMedia()" class="btn-action">Guardar</button>
     </div>
 
     <div id="import-list" class="input-section hidden">
-        <h3>Importar Lista M3U / Wiseplay</h3>
-        <p class="hint">Pega aquí el contenido de tu archivo .m3u o lista de enlaces.</p>
-        <textarea id="listInput" rows="5" placeholder="#EXTINF:-1, Canal 1 http://..."></textarea>
-        <button onclick="processList()" class="btn-action">Procesar Lista</button>
+        <h3 class="font-cyber" style="margin-top:0">Importar Lista M3U</h3>
+        <textarea id="listInput" rows="5" placeholder="#EXTINF:-1, Canal Ejemplo&#10;http://..."></textarea>
+        <button onclick="processList()" class="btn-action">Procesar</button>
     </div>
 
     <main id="library" class="grid-container">
         </main>
 
     <div id="playerModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="playerTitle">Reproduciendo...</h3>
-                <button onclick="closePlayer()" class="btn-close"><i data-lucide="x"></i></button>
-            </div>
-            <div class="video-wrapper" id="videoContainer">
-                </div>
+        <div class="modal-header">
+            <h3 id="playerTitle" class="font-cyber" style="margin:0; font-size: 1rem;">Reproduciendo...</h3>
+            <button onclick="closePlayer()" class="btn-close">X</button>
         </div>
+        <div class="video-container" id="videoWrapper"></div>
     </div>
 
-    <script src="./script.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>
+        // Inicializar Iconos y Estado
+        let mediaLibrary = JSON.parse(localStorage.getItem('vico_media_lib')) || [];
+        
+        window.addEventListener('load', () => {
+            if(window.lucide) lucide.createIcons();
+            renderLibrary();
+            
+            // Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(e => console.log(e));
+            }
+        });
+
+        // Toggle Secciones
+        window.toggleSection = function(id) {
+            const el = document.getElementById(id);
+            if(el) {
+                // Si ya está visible, lo ocultamos. Si no, ocultamos los demás y mostramos este.
+                const isHidden = el.classList.contains('hidden');
+                document.querySelectorAll('.input-section').forEach(sec => sec.classList.add('hidden'));
+                if(isHidden) el.classList.remove('hidden');
+            }
+        };
+
+        // Renderizar Biblioteca
+        function renderLibrary() {
+            const container = document.getElementById('library');
+            container.innerHTML = '';
+
+            if (mediaLibrary.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #555; margin-top: 20px;">Biblioteca vacía. Usa los botones de arriba.</p>';
+                return;
+            }
+
+            mediaLibrary.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                // Imagen por defecto si no hay cover
+                const coverImg = item.cover && item.cover.length > 5 ? item.cover : 'https://placehold.co/300x450/111/00fff7?text=VICO';
+                
+                // Escapar comillas simples para el onclick
+                const safeTitle = item.title.replace(/'/g, "\\'");
+                const safeUrl = item.url.replace(/'/g, "\\'");
+
+                card.innerHTML = `
+                    <button class="delete-btn" onclick="deleteMedia(${index})">X</button>
+                    <img src="${coverImg}" class="card-img" onerror="this.src='https://placehold.co/300x450/111/red?text=Error'">
+                    <div class="play-overlay" onclick="openPlayer('${safeUrl}', '${safeTitle}')">
+                        <i data-lucide="play" style="color: white; width: 48px; height: 48px;"></i>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">${item.title}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // Agregar Manual
+        window.addManualMedia = function() {
+            const title = document.getElementById('mediaTitle').value.trim();
+            const url = document.getElementById('mediaUrl').value.trim();
+            const cover = document.getElementById('mediaCover').value.trim();
+
+            if (!title || !url) return alert('¡Falta título o URL!');
+
+            mediaLibrary.unshift({ title, url, cover }); // Añadir al principio
+            saveData();
+            
+            // Limpiar y cerrar
+            document.getElementById('mediaTitle').value = '';
+            document.getElementById('mediaUrl').value = '';
+            document.getElementById('mediaCover').value = '';
+            toggleSection('add-manual');
+        };
+
+        // Procesar Lista
+        window.processList = function() {
+            const text = document.getElementById('listInput').value;
+            const lines = text.split('\n');
+            let imported = 0;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.startsWith('#EXTINF')) {
+                    // M3U
+                    let title = line.split(',')[1] || 'Video Sin Título';
+                    let url = lines[i+1] ? lines[i+1].trim() : '';
+                    if(url && url.startsWith('http')) {
+                        mediaLibrary.push({ title, url, cover: '' });
+                        imported++;
+                        i++; 
+                    }
+                } else if (line.startsWith('http')) {
+                    // Link suelto
+                    mediaLibrary.push({ title: `Importado ${imported+1}`, url: line, cover: '' });
+                    imported++;
+                }
+            }
+
+            if(imported > 0) {
+                alert(`¡${imported} videos importados!`);
+                saveData();
+                toggleSection('import-list');
+                document.getElementById('listInput').value = '';
+            } else {
+                alert('No encontré enlaces válidos.');
+            }
+        };
+
+        // Borrar
+        window.deleteMedia = function(index) {
+            if(confirm('¿Borrar este video?')) {
+                mediaLibrary.splice(index, 1);
+                saveData();
+            }
+        };
+
+        function saveData() {
+            localStorage.setItem('vico_media_lib', JSON.stringify(mediaLibrary));
+            renderLibrary();
+        }
+
+        // --- REPRODUCTOR ---
+        window.openPlayer = function(url, title) {
+            const modal = document.getElementById('playerModal');
+            const wrapper = document.getElementById('videoWrapper');
+            document.getElementById('playerTitle').innerText = title;
+            
+            let html = '';
+            if(url.includes('youtube') || url.includes('youtu.be')) {
+                // Extraer ID Youtube simple
+                let vId = url.split('v=')[1] || url.split('/').pop();
+                if(vId.includes('&')) vId = vId.split('&')[0];
+                html = `<iframe src="https://www.youtube.com/embed/${vId}?autoplay=1&rel=0" allowfullscreen></iframe>`;
+            } else {
+                // Video genérico (mp4 / hls nativo si el navegador soporta / iframe)
+                // Usamos video tag si parece archivo, iframe si no
+                if(url.match(/\.(mp4|webm|ogg|mov)$/i)) {
+                    html = `<video src="${url}" controls autoplay style="width:100%; height:100%"></video>`;
+                } else {
+                    html = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
+                }
+            }
+
+            wrapper.innerHTML = html;
+            modal.classList.remove('hidden');
+        };
+
+        window.closePlayer = function() {
+            document.getElementById('videoWrapper').innerHTML = ''; // Parar video
+            document.getElementById('playerModal').classList.add('hidden');
+        };
+    </script>
 </body>
 </html>
