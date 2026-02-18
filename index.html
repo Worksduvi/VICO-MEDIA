@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* ESTILOS (CSS) */
+        /* --- ESTILOS CYBER --- */
         :root {
             --bg-color: #050505;
             --card-bg: #111;
@@ -26,366 +26,454 @@
             font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
             color: var(--text);
-            padding-bottom: 80px; /* Espacio para scroll */
+            padding-bottom: 80px; /* Espacio para el nav inferior */
+            overflow-x: hidden;
         }
 
-        h1, h2, h3, .font-cyber { font-family: 'Orbitron', sans-serif; }
+        h1, h2, h3, button { font-family: 'Orbitron', sans-serif; }
         .hidden { display: none !important; }
 
         /* Header */
         header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--primary);
+            padding: 15px;
+            text-align: center;
             background: linear-gradient(180deg, rgba(0,255,247,0.1) 0%, rgba(0,0,0,0) 100%);
-            box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+            border-bottom: 1px solid var(--primary);
+            position: sticky; top: 0; z-index: 50; backdrop-filter: blur(5px);
         }
-        .logo { display: flex; align-items: center; gap: 10px; }
-        .neon-text { color: var(--primary); text-shadow: 0 0 10px var(--primary); font-weight: bold; }
+        .logo-text { font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px var(--primary); color: var(--text); }
+        .logo-accent { color: var(--secondary); }
 
-        /* Panel de Control */
-        .control-panel { 
-            padding: 30px 20px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            align-items: center; 
+        /* Navegación Inferior (Estilo App Nativa) */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #080808;
+            border-top: 1px solid #333;
+            display: flex; justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
         }
+        .nav-btn {
+            background: none; border: none; color: #555;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 0.7rem; gap: 5px;
+        }
+        .nav-btn.active { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+        .nav-btn svg { width: 24px; height: 24px; }
 
-        /* Botones Neón */
-        button { cursor: pointer; user-select: none; }
-        
-        .btn-neon, .btn-neon-alt {
-            font-family: 'Orbitron', sans-serif;
-            padding: 12px 24px;
-            border: 2px solid;
+        /* Contenedor Principal */
+        main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+
+        /* Botones de Acción */
+        .action-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .btn-neon {
+            flex: 1;
+            padding: 10px;
             background: transparent;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            max-width: 300px;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 5px var(--primary);
+            cursor: pointer;
             transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-neon:active { background: var(--primary); color: black; }
+        .btn-neon.alt { border-color: var(--secondary); color: var(--secondary); box-shadow: 0 0 5px var(--secondary); }
+        .btn-neon.alt:active { background: var(--secondary); color: black; }
 
-        .btn-neon { 
-            border-color: var(--primary); 
-            color: var(--primary); 
-            box-shadow: 0 0 10px var(--primary), inset 0 0 5px var(--primary);
+        /* Inputs */
+        .input-box {
+            background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;
         }
-        .btn-neon:active { background: var(--primary); color: #000; }
-
-        .btn-neon-alt { 
-            border-color: var(--secondary); 
-            color: var(--secondary); 
-            box-shadow: 0 0 10px var(--secondary), inset 0 0 5px var(--secondary);
-        }
-        .btn-neon-alt:active { background: var(--secondary); color: #000; }
-
-        /* Secciones de Input */
-        .input-section {
-            background: #151515;
-            margin: 0 20px 20px;
-            padding: 20px;
-            border: 1px solid #333;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
         input, textarea {
-            width: 100%;
-            background: #222;
-            border: 1px solid #444;
-            color: white;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            border-radius: 4px;
+            width: 100%; background: #222; border: 1px solid #444; color: white;
+            padding: 10px; margin-bottom: 10px; box-sizing: border-box; border-radius: 4px;
         }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
-
-        .btn-action {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-family: 'Orbitron', sans-serif;
+        
+        /* Grid Multimedia */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;
         }
-
-        /* Grid Biblioteca */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 20px;
+        .card {
+            background: #111; border-radius: 8px; overflow: hidden; position: relative;
+            border: 1px solid #333; transition: transform 0.2s;
         }
-
-        .media-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #333;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        .card:active { transform: scale(0.98); }
+        .card img { width: 100%; height: 200px; object-fit: cover; background: #222; display: block; }
+        .card-info { padding: 10px; }
+        .card-title { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Botones en tarjeta */
+        .card-actions {
+            position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10;
         }
-        .media-card:active { transform: scale(0.98); }
-
-        .card-img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            background: #222;
-            display: block;
+        .mini-btn {
+            background: rgba(0,0,0,0.7); color: white; border: none;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-
-        .card-info { padding: 10px; background: rgba(0,0,0,0.8); position: absolute; bottom: 0; width: 100%; }
-        .card-title { font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white; }
-
-        .delete-btn {
-            position: absolute;
-            top: 5px; right: 5px;
-            background: rgba(255, 0, 0, 0.7);
-            color: white;
-            border: none;
-            width: 30px; height: 30px;
-            border-radius: 50%;
-            font-weight: bold;
-            z-index: 10;
-        }
+        .mini-btn.fav.active { color: var(--secondary); }
+        .mini-btn.del { color: red; }
 
         .play-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            background: rgba(0,0,0,0.3);
-            opacity: 0; transition: opacity 0.2s;
+            background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s;
         }
-        .media-card:hover .play-overlay { opacity: 1; }
+        .card:hover .play-overlay { opacity: 1; }
 
         /* Modal Reproductor */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 2000;
-            display: flex; flex-direction: column;
+            background: black; z-index: 2000; display: flex; flex-direction: column;
         }
         .modal-header {
-            padding: 15px;
-            background: #111;
-            border-bottom: 1px solid var(--primary);
+            padding: 10px; background: #111; border-bottom: 1px solid var(--primary);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .btn-close { background: transparent; color: var(--secondary); border: none; font-size: 24px; padding: 0 10px; }
-        .video-container { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; }
-        iframe, video { width: 100%; height: 100%; border: none; max-height: 80vh; }
+        .video-container { flex: 1; background: black; display: flex; align-items: center; justify-content: center; }
+        iframe, video { width: 100%; height: 100%; border: none; }
+
+        /* Chat y Navegador */
+        .chat-window { height: 300px; background: #111; border: 1px solid #333; margin-bottom: 10px; padding: 10px; overflow-y: auto; }
+        .chat-msg { margin-bottom: 5px; padding: 5px; background: #222; border-radius: 4px; font-size: 0.9rem; }
+        .browser-frame { width: 100%; height: 60vh; border: 1px solid #333; background: white; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">
-            <i data-lucide="play-circle" style="color: var(--secondary);"></i>
-            <h1>VICO <span class="neon-text">MEDIA</span></h1>
-        </div>
+        <div class="logo-text">VICO <span class="logo-accent">MEDIA</span></div>
     </header>
 
-    <div class="control-panel">
-        <button onclick="toggleSection('add-manual')" class="btn-neon">
-            <i data-lucide="plus"></i> Agregar URL
+    <main>
+        
+        <section id="view-library">
+            <div class="action-bar">
+                <button onclick="toggleInput('input-manual')" class="btn-neon"><i data-lucide="plus"></i> Añadir</button>
+                <button onclick="toggleInput('input-list')" class="btn-neon alt"><i data-lucide="list"></i> Importar</button>
+            </div>
+
+            <div id="input-manual" class="input-box hidden">
+                <h3>Añadir Video</h3>
+                <input type="text" id="mTitle" placeholder="Título">
+                <input type="text" id="mUrl" placeholder="URL (mp4, youtube, m3u8...)">
+                <input type="text" id="mCover" placeholder="Imagen URL (Opcional)">
+                <button onclick="addMedia()" class="btn-neon" style="width:100%">Guardar</button>
+            </div>
+
+            <div id="input-list" class="input-box hidden">
+                <h3>Pegar Lista (M3U / Texto)</h3>
+                <textarea id="mList" rows="5" placeholder="#EXTINF:-1, Titulo&#10;http://..."></textarea>
+                <button onclick="importList()" class="btn-neon alt" style="width:100%">Procesar</button>
+            </div>
+
+            <div id="library-grid" class="grid"></div>
+        </section>
+
+        <section id="view-favorites" class="hidden">
+            <h2 style="color:var(--secondary)"><i data-lucide="heart"></i> Favoritos</h2>
+            <div id="fav-grid" class="grid">
+                <p style="color:#555">Marca videos con el corazón para verlos aquí.</p>
+            </div>
+        </section>
+
+        <section id="view-browser" class="hidden">
+            <div class="input-box" style="display:flex; gap:5px; margin-bottom:10px;">
+                <input type="text" id="browserUrl" placeholder="https://google.com" style="margin:0">
+                <button onclick="loadBrowser()" class="btn-neon">Ir</button>
+            </div>
+            <iframe id="webFrame" class="browser-frame" src="about:blank"></iframe>
+            <p style="font-size:0.8rem; color:#555; text-align:center; margin-top:5px;">Nota: Algunas webs bloquean ser vistas dentro de apps.</p>
+        </section>
+
+        <section id="view-chat" class="hidden">
+            <h2>Chat AI (Local)</h2>
+            <div id="chatBox" class="chat-window">
+                <div class="chat-msg" style="color:var(--primary)">VICO: Hola, ¿qué quieres ver hoy?</div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="chatInput" placeholder="Escribe algo..." style="margin:0">
+                <button onclick="sendChat()" class="btn-neon">Enviar</button>
+            </div>
+        </section>
+
+        <section id="view-settings" class="hidden">
+            <h2>Configuración</h2>
+            <div class="input-box">
+                <button onclick="exportData()" class="btn-neon" style="width:100%; margin-bottom:10px;"><i data-lucide="download"></i> Exportar Copia de Seguridad</button>
+                <div style="position:relative">
+                    <button class="btn-neon alt" style="width:100%"><i data-lucide="upload"></i> Restaurar Copia</button>
+                    <input type="file" onchange="importData(this)" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
+                </div>
+            </div>
+            <div class="input-box">
+                <p>Versión: 2.0 (Integrated Player)</p>
+                <p style="font-size:0.8rem; color:#666">Creado por Jaime</p>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchTab('view-library', this)">
+            <i data-lucide="film"></i> Biblio
         </button>
-        <button onclick="toggleSection('import-list')" class="btn-neon-alt">
-            <i data-lucide="list"></i> Importar Lista
+        <button class="nav-btn" onclick="switchTab('view-favorites', this)">
+            <i data-lucide="heart"></i> Favs
         </button>
-    </div>
-
-    <div id="add-manual" class="input-section hidden">
-        <h3 class="font-cyber" style="margin-top:0">Agregar Video</h3>
-        <input type="text" id="mediaTitle" placeholder="Título (ej: Mi Video)">
-        <input type="text" id="mediaUrl" placeholder="URL (mp4, youtube, m3u8...)">
-        <input type="text" id="mediaCover" placeholder="URL Imagen (Opcional)">
-        <button onclick="addManualMedia()" class="btn-action">Guardar</button>
-    </div>
-
-    <div id="import-list" class="input-section hidden">
-        <h3 class="font-cyber" style="margin-top:0">Importar Lista M3U</h3>
-        <textarea id="listInput" rows="5" placeholder="#EXTINF:-1, Canal Ejemplo&#10;http://..."></textarea>
-        <button onclick="processList()" class="btn-action">Procesar</button>
-    </div>
-
-    <main id="library" class="grid-container">
-        </main>
+        <button class="nav-btn" onclick="switchTab('view-browser', this)">
+            <i data-lucide="globe"></i> Web
+        </button>
+        <button class="nav-btn" onclick="switchTab('view-chat', this)">
+            <i data-lucide="message-square"></i> Chat
+        </button>
+        <button class="nav-btn" onclick="switchTab('view-settings', this)">
+            <i data-lucide="settings"></i> Ajustes
+        </button>
+    </nav>
 
     <div id="playerModal" class="modal hidden">
         <div class="modal-header">
-            <h3 id="playerTitle" class="font-cyber" style="margin:0; font-size: 1rem;">Reproduciendo...</h3>
-            <button onclick="closePlayer()" class="btn-close">X</button>
+            <span id="playerTitle" style="font-weight:bold; color:var(--primary)">Reproduciendo</span>
+            <button onclick="closePlayer()" style="background:none; border:none; color:red; font-size:1.5rem;">X</button>
         </div>
-        <div class="video-container" id="videoWrapper"></div>
+        <div id="videoWrapper" class="video-container"></div>
     </div>
 
     <script>
-        // Inicializar Iconos y Estado
-        let mediaLibrary = JSON.parse(localStorage.getItem('vico_media_lib')) || [];
-        
+        // --- ESTADO ---
+        let library = JSON.parse(localStorage.getItem('vicomedia_lib')) || [];
+
+        // --- INICIO ---
         window.addEventListener('load', () => {
-            if(window.lucide) lucide.createIcons();
+            lucide.createIcons();
             renderLibrary();
+            renderFavorites();
             
-            // Service Worker
+            // SW para PWA
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(e => console.log(e));
+                navigator.serviceWorker.register('./sw.js').catch(console.log);
             }
         });
 
-        // Toggle Secciones
-        window.toggleSection = function(id) {
-            const el = document.getElementById(id);
-            if(el) {
-                // Si ya está visible, lo ocultamos. Si no, ocultamos los demás y mostramos este.
-                const isHidden = el.classList.contains('hidden');
-                document.querySelectorAll('.input-section').forEach(sec => sec.classList.add('hidden'));
-                if(isHidden) el.classList.remove('hidden');
-            }
+        // --- NAVEGACIÓN ---
+        window.switchTab = function(viewId, btn) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+            // Mostrar la elegida
+            document.getElementById(viewId).classList.remove('hidden');
+            
+            // Actualizar botones
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if(viewId === 'view-favorites') renderFavorites();
         };
 
-        // Renderizar Biblioteca
-        function renderLibrary() {
-            const container = document.getElementById('library');
-            container.innerHTML = '';
+        window.toggleInput = function(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        };
 
-            if (mediaLibrary.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #555; margin-top: 20px;">Biblioteca vacía. Usa los botones de arriba.</p>';
+        // --- BIBLIOTECA ---
+        function renderLibrary() {
+            const grid = document.getElementById('library-grid');
+            grid.innerHTML = '';
+            
+            if(library.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#555; margin-top:20px">Biblioteca vacía.</p>';
                 return;
             }
 
-            mediaLibrary.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                // Imagen por defecto si no hay cover
-                const coverImg = item.cover && item.cover.length > 5 ? item.cover : 'https://placehold.co/300x450/111/00fff7?text=VICO';
-                
-                // Escapar comillas simples para el onclick
-                const safeTitle = item.title.replace(/'/g, "\\'");
-                const safeUrl = item.url.replace(/'/g, "\\'");
-
-                card.innerHTML = `
-                    <button class="delete-btn" onclick="deleteMedia(${index})">X</button>
-                    <img src="${coverImg}" class="card-img" onerror="this.src='https://placehold.co/300x450/111/red?text=Error'">
-                    <div class="play-overlay" onclick="openPlayer('${safeUrl}', '${safeTitle}')">
-                        <i data-lucide="play" style="color: white; width: 48px; height: 48px;"></i>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-title">${item.title}</div>
-                    </div>
-                `;
-                container.appendChild(card);
+            library.forEach((item, index) => {
+                const card = createCard(item, index);
+                grid.appendChild(card);
             });
-            if(window.lucide) lucide.createIcons();
+            lucide.createIcons();
         }
 
-        // Agregar Manual
-        window.addManualMedia = function() {
-            const title = document.getElementById('mediaTitle').value.trim();
-            const url = document.getElementById('mediaUrl').value.trim();
-            const cover = document.getElementById('mediaCover').value.trim();
-
-            if (!title || !url) return alert('¡Falta título o URL!');
-
-            mediaLibrary.unshift({ title, url, cover }); // Añadir al principio
-            saveData();
+        function renderFavorites() {
+            const grid = document.getElementById('fav-grid');
+            grid.innerHTML = '';
+            const favs = library.filter(i => i.fav);
             
-            // Limpiar y cerrar
-            document.getElementById('mediaTitle').value = '';
-            document.getElementById('mediaUrl').value = '';
-            document.getElementById('mediaCover').value = '';
-            toggleSection('add-manual');
+            if(favs.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#555; margin-top:20px">No tienes favoritos.</p>';
+                return;
+            }
+
+            // Nota: Aquí pasamos el índice original para poder borrar/editar correctamente es complejo,
+            // así que para simplificar, en favoritos solo permitimos reproducir o quitar fav.
+            favs.forEach(item => {
+                // Buscamos el index real en la librería principal
+                const realIndex = library.indexOf(item);
+                const card = createCard(item, realIndex);
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function createCard(item, index) {
+            const el = document.createElement('div');
+            el.className = 'card';
+            const img = item.cover || 'https://placehold.co/300x450/111/00fff7?text=MEDIA';
+            
+            el.innerHTML = `
+                <div class="card-actions">
+                    <button class="mini-btn fav ${item.fav ? 'active' : ''}" onclick="toggleFav(${index})">
+                        <i data-lucide="heart" style="width:14px"></i>
+                    </button>
+                    <button class="mini-btn del" onclick="deleteItem(${index})">
+                        <i data-lucide="trash-2" style="width:14px"></i>
+                    </button>
+                </div>
+                <img src="${img}" onerror="this.src='https://placehold.co/300x450/222/555?text=Error'">
+                <div class="play-overlay" onclick="playMedia('${item.url.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}')">
+                    <i data-lucide="play-circle" style="color:white; width:48px; height:48px"></i>
+                </div>
+                <div class="card-info">
+                    <div class="card-title">${item.title}</div>
+                </div>
+            `;
+            return el;
+        }
+
+        // --- ACCIONES DE DATOS ---
+        window.addMedia = function() {
+            const t = document.getElementById('mTitle').value;
+            const u = document.getElementById('mUrl').value;
+            const c = document.getElementById('mCover').value;
+            if(!t || !u) return alert('Título y URL requeridos');
+            
+            library.unshift({ title: t, url: u, cover: c, fav: false });
+            save();
+            document.getElementById('mTitle').value = '';
+            document.getElementById('mUrl').value = '';
+            toggleInput('input-manual');
         };
 
-        // Procesar Lista
-        window.processList = function() {
-            const text = document.getElementById('listInput').value;
-            const lines = text.split('\n');
-            let imported = 0;
-
-            for (let i = 0; i < lines.length; i++) {
+        window.importList = function() {
+            const txt = document.getElementById('mList').value;
+            const lines = txt.split('\n');
+            let count = 0;
+            
+            for(let i=0; i<lines.length; i++) {
                 let line = lines[i].trim();
-                if (line.startsWith('#EXTINF')) {
-                    // M3U
-                    let title = line.split(',')[1] || 'Video Sin Título';
-                    let url = lines[i+1] ? lines[i+1].trim() : '';
+                if(line.startsWith('#EXTINF')) {
+                    let title = line.split(',')[1] || 'Sin Título';
+                    let url = lines[i+1]?.trim();
                     if(url && url.startsWith('http')) {
-                        mediaLibrary.push({ title, url, cover: '' });
-                        imported++;
-                        i++; 
+                        library.push({ title, url, cover: '', fav: false });
+                        count++; i++;
                     }
-                } else if (line.startsWith('http')) {
-                    // Link suelto
-                    mediaLibrary.push({ title: `Importado ${imported+1}`, url: line, cover: '' });
-                    imported++;
+                } else if(line.startsWith('http')) {
+                    library.push({ title: `Video ${library.length+1}`, url: line, cover: '', fav: false });
+                    count++;
                 }
             }
+            
+            if(count > 0) { alert(`Importados ${count} videos`); save(); }
+            else { alert('No se encontraron enlaces'); }
+            toggleInput('input-list');
+        };
 
-            if(imported > 0) {
-                alert(`¡${imported} videos importados!`);
-                saveData();
-                toggleSection('import-list');
-                document.getElementById('listInput').value = '';
-            } else {
-                alert('No encontré enlaces válidos.');
+        window.toggleFav = function(index) {
+            library[index].fav = !library[index].fav;
+            save();
+        };
+
+        window.deleteItem = function(index) {
+            if(confirm('¿Borrar?')) {
+                library.splice(index, 1);
+                save();
             }
         };
 
-        // Borrar
-        window.deleteMedia = function(index) {
-            if(confirm('¿Borrar este video?')) {
-                mediaLibrary.splice(index, 1);
-                saveData();
-            }
-        };
-
-        function saveData() {
-            localStorage.setItem('vico_media_lib', JSON.stringify(mediaLibrary));
+        function save() {
+            localStorage.setItem('vicomedia_lib', JSON.stringify(library));
             renderLibrary();
+            // Si estamos en la vista de favoritos, refrescarla también
+            if(!document.getElementById('view-favorites').classList.contains('hidden')) {
+                renderFavorites();
+            }
         }
 
         // --- REPRODUCTOR ---
-        window.openPlayer = function(url, title) {
+        window.playMedia = function(url, title) {
             const modal = document.getElementById('playerModal');
-            const wrapper = document.getElementById('videoWrapper');
+            const wrap = document.getElementById('videoWrapper');
             document.getElementById('playerTitle').innerText = title;
             
             let html = '';
             if(url.includes('youtube') || url.includes('youtu.be')) {
-                // Extraer ID Youtube simple
-                let vId = url.split('v=')[1] || url.split('/').pop();
-                if(vId.includes('&')) vId = vId.split('&')[0];
-                html = `<iframe src="https://www.youtube.com/embed/${vId}?autoplay=1&rel=0" allowfullscreen></iframe>`;
+                let vid = url.split('v=')[1] || url.split('/').pop();
+                if(vid.includes('&')) vid = vid.split('&')[0];
+                html = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1" allowfullscreen></iframe>`;
+            } else if(url.match(/\.(mp4|webm|mkv)$/i)) {
+                html = `<video src="${url}" controls autoplay style="width:100%;height:100%"></video>`;
             } else {
-                // Video genérico (mp4 / hls nativo si el navegador soporta / iframe)
-                // Usamos video tag si parece archivo, iframe si no
-                if(url.match(/\.(mp4|webm|ogg|mov)$/i)) {
-                    html = `<video src="${url}" controls autoplay style="width:100%; height:100%"></video>`;
-                } else {
-                    html = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
-                }
+                html = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
             }
-
-            wrapper.innerHTML = html;
+            
+            wrap.innerHTML = html;
             modal.classList.remove('hidden');
         };
 
         window.closePlayer = function() {
-            document.getElementById('videoWrapper').innerHTML = ''; // Parar video
+            document.getElementById('videoWrapper').innerHTML = '';
             document.getElementById('playerModal').classList.add('hidden');
+        };
+
+        // --- UTILIDADES ---
+        window.loadBrowser = function() {
+            const url = document.getElementById('browserUrl').value;
+            const finalUrl = url.startsWith('http') ? url : 'https://' + url;
+            document.getElementById('webFrame').src = finalUrl;
+        };
+
+        window.sendChat = function() {
+            const inp = document.getElementById('chatInput');
+            const txt = inp.value;
+            if(!txt) return;
+            
+            const box = document.getElementById('chatBox');
+            box.innerHTML += `<div class="chat-msg" style="text-align:right; background:#333">${txt}</div>`;
+            inp.value = '';
+            
+            // Simulación respuesta
+            setTimeout(() => {
+                const answers = ["Interesante...", "No tengo esa peli, ¿la buscamos?", "Añade la URL en la biblioteca.", "Soy un bot simple por ahora."];
+                const rand = answers[Math.floor(Math.random() * answers.length)];
+                box.innerHTML += `<div class="chat-msg" style="color:var(--primary)">VICO: ${rand}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 1000);
+        };
+
+        window.exportData = function() {
+            const dataStr = JSON.stringify(library);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = "vico_backup.json";
+            a.click();
+        };
+
+        window.importData = function(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(Array.isArray(data)) {
+                        library = data;
+                        save();
+                        alert('Backup restaurado con éxito');
+                    }
+                } catch(err) { alert('Archivo inválido'); }
+            };
+            reader.readAsText(file);
         };
     </script>
 </body>
