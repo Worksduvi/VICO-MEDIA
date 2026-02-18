@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vico Media</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <header>
@@ -13,6 +14,7 @@
       <button onclick="showSection('library')">Biblioteca</button>
       <button onclick="showSection('favorites')">Favoritos</button>
       <button onclick="showSection('browser')">Navegador</button>
+      <button onclick="showSection('chat')">Chat AI</button>
       <button onclick="showSection('settings')">⚙️ Configuración</button>
     </nav>
   </header>
@@ -24,6 +26,8 @@
       <input type="text" id="movieTitle" placeholder="Título">
       <input type="text" id="movieLink" placeholder="URL de la película">
       <button onclick="addMovie()">Vicoplexity!</button>
+      <input type="text" id="batchUrl" placeholder="URL principal lote">
+      <button onclick="addBatch()">Añadir lote</button>
       <div id="movieGrid" class="grid"></div>
     </section>
 
@@ -39,16 +43,30 @@
       <iframe src="https://duckduckgo.com" width="100%" height="400"></iframe>
     </section>
 
+    <!-- Chat AI -->
+    <section id="chat" class="hidden">
+      <h2>Chat AI</h2>
+      <div id="chatWindow"></div>
+      <input type="text" id="chatInput" placeholder="Buscar película...">
+      <button onclick="sendChat()">Enviar</button>
+    </section>
+
     <!-- Configuración -->
     <section id="settings" class="hidden">
       <h2>Configuración</h2>
       <button onclick="toggleDark()">Modo Dark</button>
       <button onclick="downloadJSON()">Descargar JSON</button>
       <input type="file" onchange="uploadJSON(event)">
+      <button onclick="connectGroq()">Conectar API Groq</button>
       <p>Sonidos elegantes activados ✅</p>
     </section>
   </main>
 
   <script src="script.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
 </body>
 </html>
