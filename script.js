@@ -108,4 +108,4 @@ function uploadJSON(event) {
   reader.readAsText(file);
 }
 
-function send
+function sendChat()
