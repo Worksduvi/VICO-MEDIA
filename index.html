@@ -12,13 +12,22 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* --- ESTILOS CYBER --- */
+        /* --- ESTILOS CYBER (BASE) --- */
         :root {
             --bg-color: #050505;
             --card-bg: #111;
-            --primary: #00fff7; /* Cyan */
-            --secondary: #ff00ff; /* Magenta */
+            --primary: #00fff7; /* Cyan por defecto */
+            --secondary: #ff00ff; /* Magenta por defecto */
             --text: #fff;
+        }
+
+        /* Tema Matrix (Alternativo) */
+        body.matrix-mode {
+            --bg-color: #000;
+            --card-bg: #0a140a;
+            --primary: #00ff00;
+            --secondary: #008f11;
+            --text: #e0ffe0;
         }
 
         body {
@@ -26,190 +35,232 @@
             font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
             color: var(--text);
-            padding-bottom: 80px; /* Espacio para el nav inferior */
+            padding-bottom: 90px; /* Espacio extra para nav */
             overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
-        h1, h2, h3, button { font-family: 'Orbitron', sans-serif; }
+        h1, h2, h3, button, select { font-family: 'Orbitron', sans-serif; }
         .hidden { display: none !important; }
 
         /* Header */
         header {
             padding: 15px;
             text-align: center;
-            background: linear-gradient(180deg, rgba(0,255,247,0.1) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             border-bottom: 1px solid var(--primary);
-            position: sticky; top: 0; z-index: 50; backdrop-filter: blur(5px);
+            position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .logo-text { font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px var(--primary); color: var(--text); }
+        .logo-text { font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px var(--primary); }
         .logo-accent { color: var(--secondary); }
+        
+        /* Selector Idioma Header */
+        .lang-select {
+            background: #111; color: var(--primary); border: 1px solid var(--primary);
+            padding: 5px; border-radius: 4px; font-size: 0.7rem;
+        }
 
-        /* Navegación Inferior (Estilo App Nativa) */
+        /* Navegación Inferior */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #080808;
+            background: rgba(8,8,8,0.95);
             border-top: 1px solid #333;
             display: flex; justify-content: space-around;
-            padding: 10px 0;
+            padding: 12px 0;
             z-index: 100;
+            backdrop-filter: blur(5px);
         }
         .nav-btn {
-            background: none; border: none; color: #555;
+            background: none; border: none; color: #666;
             display: flex; flex-direction: column; align-items: center;
-            font-size: 0.7rem; gap: 5px;
+            font-size: 0.65rem; gap: 4px;
         }
         .nav-btn.active { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
-        .nav-btn svg { width: 24px; height: 24px; }
+        .nav-btn svg { width: 22px; height: 22px; }
 
         /* Contenedor Principal */
         main { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
-        /* Botones de Acción */
-        .action-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        /* Botones Acción */
+        .action-bar { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn-neon {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            box-shadow: 0 0 5px var(--primary);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            flex: 1; padding: 12px; background: transparent;
+            border: 1px solid var(--primary); color: var(--primary);
+            box-shadow: 0 0 5px var(--primary); cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.8rem; border-radius: 4px;
         }
         .btn-neon:active { background: var(--primary); color: black; }
         .btn-neon.alt { border-color: var(--secondary); color: var(--secondary); box-shadow: 0 0 5px var(--secondary); }
         .btn-neon.alt:active { background: var(--secondary); color: black; }
+        .btn-neon.danger { border-color: red; color: red; box-shadow: 0 0 5px red; }
 
         /* Inputs */
-        .input-box {
-            background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;
-        }
-        input, textarea {
+        .input-box { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; }
+        input, textarea, select {
             width: 100%; background: #222; border: 1px solid #444; color: white;
             padding: 10px; margin-bottom: 10px; box-sizing: border-box; border-radius: 4px;
         }
         
-        /* Grid Multimedia */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;
-        }
+        /* Grids */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .card {
-            background: #111; border-radius: 8px; overflow: hidden; position: relative;
+            background: var(--card-bg); border-radius: 8px; overflow: hidden; position: relative;
             border: 1px solid #333; transition: transform 0.2s;
         }
-        .card:active { transform: scale(0.98); }
         .card img { width: 100%; height: 200px; object-fit: cover; background: #222; display: block; }
         .card-info { padding: 10px; }
-        .card-title { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-title { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
         
-        /* Botones en tarjeta */
-        .card-actions {
-            position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10;
-        }
+        .card-actions { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10; }
         .mini-btn {
-            background: rgba(0,0,0,0.7); color: white; border: none;
+            background: rgba(0,0,0,0.8); color: white; border: none;
             width: 28px; height: 28px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
         .mini-btn.fav.active { color: var(--secondary); }
-        .mini-btn.del { color: red; }
+        .mini-btn.edit { color: var(--primary); }
 
         .play-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s;
+            background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.2s;
         }
         .card:hover .play-overlay { opacity: 1; }
 
-        /* Modal Reproductor */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 2000; display: flex; flex-direction: column;
-        }
-        .modal-header {
-            padding: 10px; background: #111; border-bottom: 1px solid var(--primary);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        /* Discovery Section */
+        .discovery-header { border-left: 4px solid var(--secondary); padding-left: 10px; margin: 20px 0 10px; }
+        .video-scroll { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; }
+        .video-item { min-width: 280px; background: #111; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+
+        /* Modal Player */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 2000; display: flex; flex-direction: column; }
+        .modal-header { padding: 10px; background: #111; border-bottom: 1px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .video-container { flex: 1; background: black; display: flex; align-items: center; justify-content: center; }
         iframe, video { width: 100%; height: 100%; border: none; }
 
-        /* Chat y Navegador */
-        .chat-window { height: 300px; background: #111; border: 1px solid #333; margin-bottom: 10px; padding: 10px; overflow-y: auto; }
-        .chat-msg { margin-bottom: 5px; padding: 5px; background: #222; border-radius: 4px; font-size: 0.9rem; }
-        .browser-frame { width: 100%; height: 60vh; border: 1px solid #333; background: white; }
+        /* Chat */
+        .chat-window { height: 350px; background: var(--card-bg); border: 1px solid #333; margin-bottom: 10px; padding: 10px; overflow-y: auto; border-radius: 8px; }
+        .chat-msg { margin-bottom: 8px; padding: 8px; border-radius: 6px; font-size: 0.9rem; max-width: 80%; }
+        .msg-user { background: #333; margin-left: auto; color: white; }
+        .msg-ai { background: rgba(0, 255, 247, 0.1); border: 1px solid var(--primary); color: var(--primary); }
+
+        /* Credits & Donate */
+        .credits-box { text-align: center; margin-top: 20px; padding: 20px; border-top: 1px solid #333; }
+        .paypal-btn {
+            background: #0070ba; color: white; border: none; padding: 10px 20px;
+            border-radius: 20px; font-weight: bold; cursor: pointer; display: inline-flex; gap: 5px; align-items: center;
+            margin-top: 10px; font-family: sans-serif; text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-text">VICO <span class="logo-accent">MEDIA</span></div>
+        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+            <option value="es">🇪🇸 ES</option>
+            <option value="en">🇺🇸 EN</option>
+            <option value="zh">🇨🇳 ZH</option>
+        </select>
     </header>
 
     <main>
         
         <section id="view-library">
             <div class="action-bar">
-                <button onclick="toggleInput('input-manual')" class="btn-neon"><i data-lucide="plus"></i> Añadir</button>
-                <button onclick="toggleInput('input-list')" class="btn-neon alt"><i data-lucide="list"></i> Importar</button>
+                <button onclick="openEditMode()" class="btn-neon"><i data-lucide="plus"></i> <span data-t="btn_add">Añadir</span></button>
+                <button onclick="toggleInput('input-list')" class="btn-neon alt"><i data-lucide="list"></i> <span data-t="btn_import">Importar</span></button>
             </div>
 
             <div id="input-manual" class="input-box hidden">
-                <h3>Añadir Video</h3>
+                <h3 id="formTitle">Añadir Video</h3>
+                <input type="hidden" id="editIndex" value="-1">
                 <input type="text" id="mTitle" placeholder="Título">
                 <input type="text" id="mUrl" placeholder="URL (mp4, youtube, m3u8...)">
                 <input type="text" id="mCover" placeholder="Imagen URL (Opcional)">
-                <button onclick="addMedia()" class="btn-neon" style="width:100%">Guardar</button>
+                <div style="display:flex; gap:10px">
+                    <button onclick="saveMedia()" class="btn-neon" id="saveBtn">Guardar</button>
+                    <button onclick="toggleInput('input-manual')" class="btn-neon danger">Cancelar</button>
+                </div>
             </div>
 
             <div id="input-list" class="input-box hidden">
-                <h3>Pegar Lista (M3U / Texto)</h3>
-                <textarea id="mList" rows="5" placeholder="#EXTINF:-1, Titulo&#10;http://..."></textarea>
+                <h3 data-t="title_import">Pegar Lista (M3U)</h3>
+                <textarea id="mList" rows="5" placeholder="#EXTINF:-1, Titulo... http://..."></textarea>
                 <button onclick="importList()" class="btn-neon alt" style="width:100%">Procesar</button>
             </div>
 
             <div id="library-grid" class="grid"></div>
         </section>
 
-        <section id="view-favorites" class="hidden">
-            <h2 style="color:var(--secondary)"><i data-lucide="heart"></i> Favoritos</h2>
-            <div id="fav-grid" class="grid">
-                <p style="color:#555">Marca videos con el corazón para verlos aquí.</p>
-            </div>
+        <section id="view-discovery" class="hidden">
+            <h2 style="color:var(--secondary)" data-t="nav_discovery">Discovery</h2>
+            
+            <div class="discovery-header"><h3 data-t="cat_action">Acción & Adrenalina</h3></div>
+            <div class="video-scroll" id="feed-action"></div>
+
+            <div class="discovery-header"><h3 data-t="cat_scifi">Sci-Fi & Futuro</h3></div>
+            <div class="video-scroll" id="feed-scifi"></div>
+
+            <div class="discovery-header"><h3 data-t="cat_real">Historias Reales</h3></div>
+            <div class="video-scroll" id="feed-real"></div>
         </section>
 
-        <section id="view-browser" class="hidden">
-            <div class="input-box" style="display:flex; gap:5px; margin-bottom:10px;">
-                <input type="text" id="browserUrl" placeholder="https://google.com" style="margin:0">
-                <button onclick="loadBrowser()" class="btn-neon">Ir</button>
-            </div>
-            <iframe id="webFrame" class="browser-frame" src="about:blank"></iframe>
-            <p style="font-size:0.8rem; color:#555; text-align:center; margin-top:5px;">Nota: Algunas webs bloquean ser vistas dentro de apps.</p>
+        <section id="view-favorites" class="hidden">
+            <h2 style="color:var(--secondary)"><i data-lucide="heart"></i> <span data-t="nav_favs">Favoritos</span></h2>
+            <div id="fav-grid" class="grid"></div>
         </section>
 
         <section id="view-chat" class="hidden">
-            <h2>Chat AI (Local)</h2>
+            <h2 data-t="nav_chat">Chat Agéntico</h2>
+            
+            <div class="input-box" id="api-box">
+                <label style="font-size:0.8rem; color:var(--primary)">Groq / OpenAI API Key:</label>
+                <div style="display:flex; gap:5px; margin-top:5px;">
+                    <input type="password" id="apiKey" placeholder="gsk_..." style="margin:0">
+                    <button onclick="saveApiKey()" class="btn-neon">Guardar</button>
+                </div>
+                <p style="font-size:0.7rem; color:#666; margin-top:5px;" data-t="api_desc">Necesario para inteligencia real. Se guarda localmente.</p>
+            </div>
+
             <div id="chatBox" class="chat-window">
-                <div class="chat-msg" style="color:var(--primary)">VICO: Hola, ¿qué quieres ver hoy?</div>
+                <div class="chat-msg msg-ai">VICO: <span data-t="chat_welcome">Hola. ¿Qué quieres ver hoy?</span></div>
             </div>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="chatInput" placeholder="Escribe algo..." style="margin:0">
-                <button onclick="sendChat()" class="btn-neon">Enviar</button>
+                <input type="text" id="chatInput" placeholder="..." style="margin:0">
+                <button onclick="sendChat()" class="btn-neon"><i data-lucide="send"></i></button>
             </div>
         </section>
 
         <section id="view-settings" class="hidden">
-            <h2>Configuración</h2>
+            <h2 data-t="nav_settings">Configuración</h2>
+            
             <div class="input-box">
-                <button onclick="exportData()" class="btn-neon" style="width:100%; margin-bottom:10px;"><i data-lucide="download"></i> Exportar Copia de Seguridad</button>
+                <h3 data-t="theme_title">Apariencia</h3>
+                <button onclick="toggleTheme()" class="btn-neon alt" style="width:100%">
+                    <i data-lucide="sun"></i> <span id="themeLabel">Modo Matrix</span>
+                </button>
+            </div>
+
+            <div class="input-box">
+                <h3 data-t="data_title">Datos</h3>
+                <button onclick="exportData()" class="btn-neon" style="width:100%; margin-bottom:10px;"><i data-lucide="download"></i> Exportar JSON</button>
                 <div style="position:relative">
-                    <button class="btn-neon alt" style="width:100%"><i data-lucide="upload"></i> Restaurar Copia</button>
+                    <button class="btn-neon alt" style="width:100%"><i data-lucide="upload"></i> Restaurar JSON</button>
                     <input type="file" onchange="importData(this)" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
                 </div>
             </div>
-            <div class="input-box">
-                <p>Versión: 2.0 (Integrated Player)</p>
-                <p style="font-size:0.8rem; color:#666">Creado por Jaime</p>
+
+            <div class="credits-box">
+                <h3>VICO MEDIA v3.0</h3>
+                <p style="color:#888; font-size:0.8rem;">Desarrollado por <strong>Jaime</strong></p>
+                <p style="color:#555; font-size:0.7rem;">Potenciado por Groq & Web Technologies</p>
+                
+                <a href="https://paypal.me/CAMBIA_ESTO_POR_TU_USUARIO" target="_blank" class="paypal-btn">
+                    <i data-lucide="coffee"></i> <span data-t="donate_btn">Invítame un Café</span>
+                </a>
             </div>
         </section>
 
@@ -217,78 +268,116 @@
 
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="switchTab('view-library', this)">
-            <i data-lucide="film"></i> Biblio
+            <i data-lucide="film"></i> <span data-t="nav_lib">Biblio</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('view-discovery', this)">
+            <i data-lucide="compass"></i> <span data-t="nav_discovery">Discovery</span>
         </button>
         <button class="nav-btn" onclick="switchTab('view-favorites', this)">
-            <i data-lucide="heart"></i> Favs
-        </button>
-        <button class="nav-btn" onclick="switchTab('view-browser', this)">
-            <i data-lucide="globe"></i> Web
+            <i data-lucide="heart"></i> <span data-t="nav_favs">Favs</span>
         </button>
         <button class="nav-btn" onclick="switchTab('view-chat', this)">
-            <i data-lucide="message-square"></i> Chat
+            <i data-lucide="bot"></i> <span data-t="nav_chat">Chat</span>
         </button>
         <button class="nav-btn" onclick="switchTab('view-settings', this)">
-            <i data-lucide="settings"></i> Ajustes
+            <i data-lucide="settings"></i> <span data-t="nav_settings">Ajustes</span>
         </button>
     </nav>
 
     <div id="playerModal" class="modal hidden">
         <div class="modal-header">
-            <span id="playerTitle" style="font-weight:bold; color:var(--primary)">Reproduciendo</span>
-            <button onclick="closePlayer()" style="background:none; border:none; color:red; font-size:1.5rem;">X</button>
+            <span id="playerTitle" style="font-weight:bold; color:var(--primary); overflow:hidden; white-space:nowrap; max-width:80%;">Reproductor</span>
+            <button onclick="closePlayer()" style="background:none; border:none; color:red; font-size:1.5rem;"><i data-lucide="x"></i></button>
         </div>
         <div id="videoWrapper" class="video-container"></div>
     </div>
 
     <script>
-        // --- ESTADO ---
+        // --- 1. CONFIGURACIÓN Y ESTADO ---
         let library = JSON.parse(localStorage.getItem('vicomedia_lib')) || [];
-
-        // --- INICIO ---
-        window.addEventListener('load', () => {
-            lucide.createIcons();
-            renderLibrary();
-            renderFavorites();
-            
-            // SW para PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(console.log);
+        let apiKey = localStorage.getItem('vicomedia_apikey') || '';
+        let currentLang = localStorage.getItem('vicomedia_lang') || 'es';
+        
+        const TRANSLATIONS = {
+            es: {
+                nav_lib: "Biblio", nav_discovery: "Discovery", nav_favs: "Favs", nav_chat: "Chat", nav_settings: "Ajustes",
+                btn_add: "Añadir", btn_import: "Importar", title_import: "Pegar Lista M3U",
+                cat_action: "Acción & Adrenalina", cat_scifi: "Sci-Fi & Futuro", cat_real: "Historias Reales",
+                chat_welcome: "Hola. ¿Qué quieres ver hoy?", api_desc: "Key de Groq/OpenAI. Se guarda localmente.",
+                theme_title: "Apariencia", data_title: "Datos", donate_btn: "Invítame un Café"
+            },
+            en: {
+                nav_lib: "Library", nav_discovery: "Discovery", nav_favs: "Favs", nav_chat: "AI Chat", nav_settings: "Settings",
+                btn_add: "Add", btn_import: "Import", title_import: "Paste M3U List",
+                cat_action: "Action & Adrenaline", cat_scifi: "Sci-Fi & Future", cat_real: "True Stories",
+                chat_welcome: "Hello. What do you want to watch?", api_desc: "Groq/OpenAI Key. Stored locally.",
+                theme_title: "Appearance", data_title: "Data", donate_btn: "Buy me a Coffee"
+            },
+            zh: {
+                nav_lib: "资料库", nav_discovery: "发现", nav_favs: "收藏", nav_chat: "智能对话", nav_settings: "设置",
+                btn_add: "添加", btn_import: "导入", title_import: "粘贴 M3U 列表",
+                cat_action: "动作与激情", cat_scifi: "科幻与未来", cat_real: "真实故事",
+                chat_welcome: "你好，今天想看什么？", api_desc: "Groq/OpenAI 密钥。本地存储。",
+                theme_title: "外观", data_title: "数据", donate_btn: "请我喝咖啡"
             }
+        };
+
+        // --- 2. INICIO ---
+        window.addEventListener('load', () => {
+            document.getElementById('langSelect').value = currentLang;
+            updateTexts();
+            document.getElementById('apiKey').value = apiKey;
+            
+            renderLibrary();
+            renderDiscovery(); // Cargar trailers
+            
+            // Cargar tema
+            if(localStorage.getItem('vicomedia_theme') === 'matrix') {
+                document.body.classList.add('matrix-mode');
+                document.getElementById('themeLabel').innerText = "Modo Cyber";
+            }
+
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(console.log);
+            lucide.createIcons();
         });
 
-        // --- NAVEGACIÓN ---
+        // --- 3. IDIOMAS ---
+        window.changeLanguage = function(lang) {
+            currentLang = lang;
+            localStorage.setItem('vicomedia_lang', lang);
+            updateTexts();
+        };
+
+        function updateTexts() {
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                if(TRANSLATIONS[currentLang][key]) el.innerText = TRANSLATIONS[currentLang][key];
+            });
+        }
+
+        // --- 4. NAVEGACIÓN ---
         window.switchTab = function(viewId, btn) {
-            // Ocultar todas las secciones
             document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
-            // Mostrar la elegida
             document.getElementById(viewId).classList.remove('hidden');
-            
-            // Actualizar botones
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             if(viewId === 'view-favorites') renderFavorites();
         };
 
         window.toggleInput = function(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
+            document.getElementById(id).classList.toggle('hidden');
         };
 
-        // --- BIBLIOTECA ---
+        // --- 5. BIBLIOTECA & EDICIÓN ---
         function renderLibrary() {
             const grid = document.getElementById('library-grid');
             grid.innerHTML = '';
-            
             if(library.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#555; margin-top:20px">Biblioteca vacía.</p>';
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#555;">Vacío / Empty</p>';
                 return;
             }
-
             library.forEach((item, index) => {
-                const card = createCard(item, index);
-                grid.appendChild(card);
+                grid.appendChild(createCard(item, index));
             });
             lucide.createIcons();
         }
@@ -297,19 +386,9 @@
             const grid = document.getElementById('fav-grid');
             grid.innerHTML = '';
             const favs = library.filter(i => i.fav);
-            
-            if(favs.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#555; margin-top:20px">No tienes favoritos.</p>';
-                return;
-            }
-
-            // Nota: Aquí pasamos el índice original para poder borrar/editar correctamente es complejo,
-            // así que para simplificar, en favoritos solo permitimos reproducir o quitar fav.
             favs.forEach(item => {
-                // Buscamos el index real en la librería principal
                 const realIndex = library.indexOf(item);
-                const card = createCard(item, realIndex);
-                grid.appendChild(card);
+                grid.appendChild(createCard(item, realIndex));
             });
             lucide.createIcons();
         }
@@ -317,39 +396,71 @@
         function createCard(item, index) {
             const el = document.createElement('div');
             el.className = 'card';
-            const img = item.cover || 'https://placehold.co/300x450/111/00fff7?text=MEDIA';
+            const img = item.cover && item.cover.length > 5 ? item.cover : 'https://placehold.co/300x450/111/00fff7?text=MEDIA';
             
             el.innerHTML = `
                 <div class="card-actions">
-                    <button class="mini-btn fav ${item.fav ? 'active' : ''}" onclick="toggleFav(${index})">
-                        <i data-lucide="heart" style="width:14px"></i>
-                    </button>
-                    <button class="mini-btn del" onclick="deleteItem(${index})">
-                        <i data-lucide="trash-2" style="width:14px"></i>
-                    </button>
+                    <button class="mini-btn edit" onclick="openEditMode(${index})"><i data-lucide="edit-2" style="width:14px"></i></button>
+                    <button class="mini-btn fav ${item.fav ? 'active' : ''}" onclick="toggleFav(${index})"><i data-lucide="heart" style="width:14px"></i></button>
+                    <button class="mini-btn del" onclick="deleteItem(${index})" style="color:red"><i data-lucide="trash" style="width:14px"></i></button>
                 </div>
                 <img src="${img}" onerror="this.src='https://placehold.co/300x450/222/555?text=Error'">
                 <div class="play-overlay" onclick="playMedia('${item.url.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}')">
                     <i data-lucide="play-circle" style="color:white; width:48px; height:48px"></i>
                 </div>
-                <div class="card-info">
-                    <div class="card-title">${item.title}</div>
-                </div>
+                <div class="card-info"><div class="card-title">${item.title}</div></div>
             `;
             return el;
         }
 
-        // --- ACCIONES DE DATOS ---
-        window.addMedia = function() {
+        // Modo Añadir/Editar
+        window.openEditMode = function(index = -1) {
+            const modal = document.getElementById('input-manual');
+            const titleInput = document.getElementById('mTitle');
+            const urlInput = document.getElementById('mUrl');
+            const coverInput = document.getElementById('mCover');
+            const idxInput = document.getElementById('editIndex');
+            const btn = document.getElementById('saveBtn');
+            const title = document.getElementById('formTitle');
+
+            modal.classList.remove('hidden');
+            idxInput.value = index;
+
+            if(index >= 0) {
+                // Editar
+                const item = library[index];
+                titleInput.value = item.title;
+                urlInput.value = item.url;
+                coverInput.value = item.cover;
+                btn.innerText = "Actualizar / Update";
+                title.innerText = "Editar Video";
+            } else {
+                // Nuevo
+                titleInput.value = ''; urlInput.value = ''; coverInput.value = '';
+                btn.innerText = "Guardar / Save";
+                title.innerText = "Añadir Video";
+            }
+            modal.scrollIntoView({behavior: "smooth"});
+        };
+
+        window.saveMedia = function() {
+            const idx = parseInt(document.getElementById('editIndex').value);
             const t = document.getElementById('mTitle').value;
             const u = document.getElementById('mUrl').value;
             const c = document.getElementById('mCover').value;
-            if(!t || !u) return alert('Título y URL requeridos');
-            
-            library.unshift({ title: t, url: u, cover: c, fav: false });
+
+            if(!t || !u) return alert("Título y URL requeridos");
+
+            if(idx >= 0) {
+                // Update
+                library[idx].title = t;
+                library[idx].url = u;
+                library[idx].cover = c;
+            } else {
+                // Create
+                library.unshift({ title: t, url: u, cover: c, fav: false });
+            }
             save();
-            document.getElementById('mTitle').value = '';
-            document.getElementById('mUrl').value = '';
             toggleInput('input-manual');
         };
 
@@ -357,7 +468,6 @@
             const txt = document.getElementById('mList').value;
             const lines = txt.split('\n');
             let count = 0;
-            
             for(let i=0; i<lines.length; i++) {
                 let line = lines[i].trim();
                 if(line.startsWith('#EXTINF')) {
@@ -367,43 +477,140 @@
                         library.push({ title, url, cover: '', fav: false });
                         count++; i++;
                     }
-                } else if(line.startsWith('http')) {
-                    library.push({ title: `Video ${library.length+1}`, url: line, cover: '', fav: false });
-                    count++;
                 }
             }
-            
-            if(count > 0) { alert(`Importados ${count} videos`); save(); }
-            else { alert('No se encontraron enlaces'); }
-            toggleInput('input-list');
+            if(count>0) { save(); alert(`${count} importados`); toggleInput('input-list'); }
         };
 
-        window.toggleFav = function(index) {
-            library[index].fav = !library[index].fav;
-            save();
-        };
+        window.toggleFav = function(i) { library[i].fav = !library[i].fav; save(); };
+        window.deleteItem = function(i) { if(confirm('Delete?')) { library.splice(i, 1); save(); } };
+        function save() { localStorage.setItem('vicomedia_lib', JSON.stringify(library)); renderLibrary(); renderFavorites(); }
 
-        window.deleteItem = function(index) {
-            if(confirm('¿Borrar?')) {
-                library.splice(index, 1);
-                save();
-            }
-        };
+        // --- 6. DISCOVERY (Trailers) ---
+        function renderDiscovery() {
+            // Datos estáticos simulando API de trailers recientes (Youtube Embeds)
+            const trailers = {
+                action: [
+                    { t: "Gladiator II", id: "4rgYUipGJNo" },
+                    { t: "Mission Impossible 8", id: "NOhDyUmT9z0" },
+                    { t: "F1 Movie", id: "6M_i40lB9bA" }
+                ],
+                scifi: [
+                    { t: "Dune: Prophecy", id: "z2oJ4n3b5k0" },
+                    { t: "Mickey 17", id: "osYpGSz_0i4" },
+                    { t: "Alien: Romulus", id: "x0XDEhPfrbQ" }
+                ],
+                real: [
+                    { t: "A Complete Unknown", id: "H3c1r0e3" }, // Simulado
+                    { t: "Oppenheimer", id: "uYPbbksJxIg" }
+                ]
+            };
 
-        function save() {
-            localStorage.setItem('vicomedia_lib', JSON.stringify(library));
-            renderLibrary();
-            // Si estamos en la vista de favoritos, refrescarla también
-            if(!document.getElementById('view-favorites').classList.contains('hidden')) {
-                renderFavorites();
-            }
+            const fillRow = (id, list) => {
+                const el = document.getElementById(id);
+                el.innerHTML = list.map(v => `
+                    <div class="video-item">
+                        <iframe width="280" height="157" src="https://www.youtube.com/embed/${v.id}" title="${v.t}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <div style="padding:5px; font-size:0.8rem; color:#aaa;">${v.t}</div>
+                    </div>
+                `).join('');
+            };
+
+            fillRow('feed-action', trailers.action);
+            fillRow('feed-scifi', trailers.scifi);
+            fillRow('feed-real', trailers.real);
         }
 
-        // --- REPRODUCTOR ---
+        // --- 7. CHAT AGENTICO (Groq) ---
+        window.saveApiKey = function() {
+            const key = document.getElementById('apiKey').value;
+            localStorage.setItem('vicomedia_apikey', key);
+            apiKey = key;
+            alert('API Key Guardada / Saved');
+        };
+
+        window.sendChat = async function() {
+            const inp = document.getElementById('chatInput');
+            const txt = inp.value;
+            if(!txt) return;
+            
+            const box = document.getElementById('chatBox');
+            box.innerHTML += `<div class="chat-msg msg-user">${txt}</div>`;
+            inp.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // Lógica Agéntica
+            if(apiKey.startsWith('gsk_')) {
+                // Intentar conectar con Groq (Requiere que el navegador permita CORS o usar un proxy, 
+                // pero este es el código cliente para intentarlo)
+                box.innerHTML += `<div class="chat-msg msg-ai" id="loading">Thinking...</div>`;
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            messages: [{ role: "user", content: txt }],
+                            model: "mixtral-8x7b-32768"
+                        })
+                    });
+                    const data = await response.json();
+                    document.getElementById('loading').remove();
+                    const aiText = data.choices[0]?.message?.content || "Error API";
+                    box.innerHTML += `<div class="chat-msg msg-ai">VICO AI: ${aiText}</div>`;
+                } catch(e) {
+                    document.getElementById('loading').remove();
+                    box.innerHTML += `<div class="chat-msg msg-ai">Error de Conexión API. Usando modo local.</div>`;
+                    localChatResponse(box);
+                }
+            } else {
+                localChatResponse(box);
+            }
+        };
+
+        function localChatResponse(box) {
+            setTimeout(() => {
+                const answers = ["Interesante...", "Busca en Discovery.", "Añade la URL en la biblioteca.", "Configura tu API Key para ser más listo."];
+                const rand = answers[Math.floor(Math.random() * answers.length)];
+                box.innerHTML += `<div class="chat-msg msg-ai">VICO (Local): ${rand}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 800);
+        }
+
+        // --- 8. SETTINGS & UTIL ---
+        window.toggleTheme = function() {
+            document.body.classList.toggle('matrix-mode');
+            const isMatrix = document.body.classList.contains('matrix-mode');
+            localStorage.setItem('vicomedia_theme', isMatrix ? 'matrix' : 'cyber');
+            document.getElementById('themeLabel').innerText = isMatrix ? "Modo Cyber" : "Modo Matrix";
+        };
+
+        window.exportData = function() {
+            const dataStr = JSON.stringify(library);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = "vicomedia_backup.json";
+            a.click();
+        };
+
+        window.importData = function(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    library = JSON.parse(e.target.result);
+                    save(); alert('Restaurado / Restored');
+                } catch(err) { alert('Error JSON'); }
+            };
+            reader.readAsText(file);
+        };
+
+        // --- 9. REPRODUCTOR ---
         window.playMedia = function(url, title) {
             const modal = document.getElementById('playerModal');
-            const wrap = document.getElementById('videoWrapper');
             document.getElementById('playerTitle').innerText = title;
+            const wrap = document.getElementById('videoWrapper');
             
             let html = '';
             if(url.includes('youtube') || url.includes('youtu.be')) {
@@ -415,7 +622,6 @@
             } else {
                 html = `<iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
             }
-            
             wrap.innerHTML = html;
             modal.classList.remove('hidden');
         };
@@ -424,57 +630,7 @@
             document.getElementById('videoWrapper').innerHTML = '';
             document.getElementById('playerModal').classList.add('hidden');
         };
-
-        // --- UTILIDADES ---
-        window.loadBrowser = function() {
-            const url = document.getElementById('browserUrl').value;
-            const finalUrl = url.startsWith('http') ? url : 'https://' + url;
-            document.getElementById('webFrame').src = finalUrl;
-        };
-
-        window.sendChat = function() {
-            const inp = document.getElementById('chatInput');
-            const txt = inp.value;
-            if(!txt) return;
-            
-            const box = document.getElementById('chatBox');
-            box.innerHTML += `<div class="chat-msg" style="text-align:right; background:#333">${txt}</div>`;
-            inp.value = '';
-            
-            // Simulación respuesta
-            setTimeout(() => {
-                const answers = ["Interesante...", "No tengo esa peli, ¿la buscamos?", "Añade la URL en la biblioteca.", "Soy un bot simple por ahora."];
-                const rand = answers[Math.floor(Math.random() * answers.length)];
-                box.innerHTML += `<div class="chat-msg" style="color:var(--primary)">VICO: ${rand}</div>`;
-                box.scrollTop = box.scrollHeight;
-            }, 1000);
-        };
-
-        window.exportData = function() {
-            const dataStr = JSON.stringify(library);
-            const blob = new Blob([dataStr], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = "vico_backup.json";
-            a.click();
-        };
-
-        window.importData = function(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(Array.isArray(data)) {
-                        library = data;
-                        save();
-                        alert('Backup restaurado con éxito');
-                    }
-                } catch(err) { alert('Archivo inválido'); }
-            };
-            reader.readAsText(file);
-        };
     </script>
 </body>
 </html>
+ 
