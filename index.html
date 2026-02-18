@@ -1,73 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vico Media</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VICO MEDIA</title>
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./icon.png">
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-  <header>
-    <h1>🎬 Vico Media</h1>
-    <nav>
-      <button onclick="showSection('library')">Biblioteca</button>
-      <button onclick="showSection('favorites')">Favoritos</button>
-      <button onclick="showSection('browser')">Navegador</button>
-      <button onclick="showSection('chat')">Chat AI</button>
-      <button onclick="showSection('settings')">⚙️ Configuración</button>
-    </nav>
-  </header>
 
-  <main>
-    <!-- Biblioteca -->
-    <section id="library">
-      <h2>Mis Películas</h2>
-      <input type="text" id="movieTitle" placeholder="Título">
-      <input type="text" id="movieLink" placeholder="URL de la película">
-      <button onclick="addMovie()">Vicoplexity!</button>
-      <input type="text" id="batchUrl" placeholder="URL principal lote">
-      <button onclick="addBatch()">Añadir lote</button>
-      <div id="movieGrid" class="grid"></div>
-    </section>
+    <header>
+        <div class="logo">
+            <i data-lucide="play-circle" class="neon-icon"></i>
+            <h1>VICO <span class="neon-text">MEDIA</span></h1>
+        </div>
+        <button id="installBtn" class="hidden">Instalar App</button>
+    </header>
 
-    <!-- Favoritos -->
-    <section id="favorites" class="hidden">
-      <h2>Favoritos</h2>
-      <ul id="favList"></ul>
-    </section>
+    <div class="control-panel">
+        <button onclick="toggleSection('add-manual')" class="btn-neon"><i data-lucide="plus"></i> Agregar URL</button>
+        <button onclick="toggleSection('import-list')" class="btn-neon-alt"><i data-lucide="list"></i> Importar Lista</button>
+    </div>
 
-    <!-- Navegador privado -->
-    <section id="browser" class="hidden">
-      <h2>Navegador Privado</h2>
-      <iframe src="https://duckduckgo.com" width="100%" height="400"></iframe>
-    </section>
+    <div id="add-manual" class="input-section hidden">
+        <h3>Agregar Multimedia</h3>
+        <input type="text" id="mediaTitle" placeholder="Título (ej: Matrix)">
+        <input type="text" id="mediaUrl" placeholder="URL del Video (mp4, m3u8, youtube...)">
+        <input type="text" id="mediaCover" placeholder="URL de la Carátula (Opcional)">
+        <button onclick="addManualMedia()" class="btn-action">Guardar</button>
+    </div>
 
-    <!-- Chat AI -->
-    <section id="chat" class="hidden">
-      <h2>Chat AI</h2>
-      <div id="chatWindow"></div>
-      <input type="text" id="chatInput" placeholder="Buscar película...">
-      <button onclick="sendChat()">Enviar</button>
-    </section>
+    <div id="import-list" class="input-section hidden">
+        <h3>Importar Lista M3U / Wiseplay</h3>
+        <p class="hint">Pega aquí el contenido de tu archivo .m3u o lista de enlaces.</p>
+        <textarea id="listInput" rows="5" placeholder="#EXTINF:-1, Canal 1 http://..."></textarea>
+        <button onclick="processList()" class="btn-action">Procesar Lista</button>
+    </div>
 
-    <!-- Configuración -->
-    <section id="settings" class="hidden">
-      <h2>Configuración</h2>
-      <button onclick="toggleDark()">Modo Dark</button>
-      <button onclick="downloadJSON()">Descargar JSON</button>
-      <input type="file" onchange="uploadJSON(event)">
-      <button onclick="connectGroq()">Conectar API Groq</button>
-      <p>Sonidos elegantes activados ✅</p>
-    </section>
-  </main>
+    <main id="library" class="grid-container">
+        </main>
 
-  <script src="script.js"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-  </script>
+    <div id="playerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="playerTitle">Reproduciendo...</h3>
+                <button onclick="closePlayer()" class="btn-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="video-wrapper" id="videoContainer">
+                </div>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
