@@ -1,6 +1,13 @@
 function showSection(id) {
-  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+  // Oculta todas las secciones
+  document.querySelectorAll("main section").forEach(sec => {
+    sec.classList.add("hidden");
+  });
+  // Muestra solo la sección seleccionada
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.remove("hidden");
+  }
 }
 
 function addMovie() {
@@ -101,6 +108,4 @@ function uploadJSON(event) {
   reader.readAsText(file);
 }
 
-function sendChat() {
-  const input = document.getElementById("chatInput").value;
-  const chatWindow = document.getElementById("chatWindow");
+function send
