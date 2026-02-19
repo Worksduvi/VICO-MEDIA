@@ -135,7 +135,7 @@
             <div id="library-grid" class="grid"></div>
         </section>
 
-        <section id="view-discovery" class="hidden">
+     <section id="view-discovery" class="hidden">
             <h2 style="color:var(--secondary)">Discovery 2026</h2>
             
             <div class="input-box" style="margin-top:10px;">
@@ -144,6 +144,39 @@
                     <input type="text" id="searchWiki" placeholder="Ej: Spider-Man 4">
                     <button onclick="searchMovieInfo()" class="btn-neon">Buscar</button>
                 </div>
+                <div id="searchResults" style="margin-top:10px; font-size:0.8rem; color:#aaa;"></div>
+            </div>
+            
+            <div class="input-box">
+                <h3 style="font-size:0.9rem; margin-top:0"><i data-lucide="film"></i> Explorador de Tráilers</h3>
+                <select id="trailerCategory" style="margin-bottom:10px; background:#000; border:1px solid var(--secondary); color:var(--secondary);">
+                    <option value="ciencia_ficcion">Ciencia Ficción</option>
+                    <option value="historia">Historia</option>
+                    <option value="sagas">Sagas</option>
+                    <option value="familiar">Familiar</option>
+                    <option value="navidad">Navidad</option>
+                    <option value="biblicas">Bíblicas</option>
+                    <option value="drama">Drama</option>
+                    <option value="animacion">Animación</option>
+                    <option value="infantil">Infantil</option>
+                    <option value="comedia">Comedia</option>
+                    <option value="documentales">Documentales</option>
+                </select>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="loadTrailers()" class="btn-neon alt" style="flex:1; padding:8px; font-size:0.75rem;"><i data-lucide="refresh-cw"></i> Recargar Tráilers</button>
+                    <button onclick="searchFreeMovies()" class="btn-neon" style="flex:1; padding:8px; font-size:0.75rem; border-color:red; color:white; background:#aa0000;"><i data-lucide="youtube"></i> Pelis Gratis</button>
+                </div>
+            </div>
+
+            <div class="discovery-header"><h3 id="trailer-section-title">Tráilers Recomendados</h3></div>
+            <div class="video-scroll" id="dynamic-trailers">
+                </div>
+
+            <div class="discovery-header"><h3>📰 Cine News (RSS)</h3></div>
+            <div id="rss-feed" style="background:#111; border-radius:8px; border:1px solid #333; max-height:250px; overflow-y:auto;">
+                <p style="padding:10px; color:#666">Cargando noticias...</p>
+            </div>
+        </section>
                 <div id="searchResults" style="margin-top:10px; font-size:0.8rem; color:#aaa;"></div>
             </div>
             
