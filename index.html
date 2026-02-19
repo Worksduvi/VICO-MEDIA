@@ -416,7 +416,94 @@
             modal.classList.remove('hidden');
         };
         window.closePlayer = function() { document.getElementById('videoWrapper').innerHTML = ''; document.getElementById('playerModal').classList.add('hidden'); };
+// LECTOR AVANZADO DE LISTAS M3U (URLs Inteligentes + Lista de Ejemplo)
+        window.importList = async function() {
+            const inputVal = document.getElementById('mList').value.trim();
+            const btn = document.querySelector('#input-list .btn-neon.alt');
+            const originalBtnText = btn.innerText;
+            btn.innerText = "Procesando... ⏳";
+            
+            try {
+                let textToParse = inputVal;
 
+                // MAGIA UX: Si el usuario deja la caja vacía, cargamos una lista de ejemplo garantizada
+                if (!inputVal) {
+                    textToParse = `#EXTM3U
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/NASA_TV_logo.svg/512px-NASA_TV_logo.svg.png" group-title="Ciencia",NASA TV
+https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Red_Bull_TV_logo.svg/512px-Red_Bull_TV_logo.svg.png" group-title="Deportes",Red Bull TV
+https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Bloomberg_Television_logo.svg/512px-Bloomberg_Television_logo.svg.png" group-title="Noticias",Bloomberg
+https://live.bloomberg.tv/hls/live/2056637/us/master.m3u8`;
+                } 
+                // Si es una URL, usamos el mejor proxy anti-CORS (corsproxy.io)
+                else if (inputVal.startsWith('http') && !inputVal.includes('\n')) {
+                    const proxyUrl = "https://corsproxy.io/?"; 
+                    const res = await fetch(proxyUrl + encodeURIComponent(inputVal));
+                    if (!res.ok) throw new Error('Bloqueo de red');
+                    textToParse = await res.text();
+                }
+
+                // Normalizamos los saltos de línea para que no falle
+                const lines = textToParse.replace(/\r\n/g, '\n').split('\n');
+                let count = 0;
+                let newCatsFound = false;
+
+                for(let i=0; i<lines.length; i++) {
+                    let line = lines[i].trim();
+                    
+                    if(line.startsWith('#EXTINF')) {
+                        let title = line.split(',').pop()?.trim() || 'Canal TV';
+                        // Soporta varios formatos de código M3U
+                        let catMatch = line.match(/group-title="([^"]+)"/i) || line.match(/group-title=([^, ]+)/i);
+                        let category = catMatch ? catMatch[1].trim() : 'General';
+                        let logoMatch = line.match(/tvg-logo="([^"]+)"/i) || line.match(/tvg-logo=([^, ]+)/i);
+                        let cover = logoMatch ? logoMatch[1].trim() : '';
+
+                        let url = '';
+                        let j = i + 1;
+                        // Buscamos la URL en las siguientes líneas
+                        while(j < lines.length && j < i + 5) {
+                            let nextLine = lines[j].trim();
+                            if(nextLine.startsWith('http')) {
+                                url = nextLine;
+                                i = j; // Saltamos hasta aquí
+                                break;
+                            } else if (nextLine.startsWith('#EXTINF')) {
+                                break; 
+                            }
+                            j++;
+                        }
+
+                        if(url) {
+                            if(category && !categories.includes(category)) {
+                                categories.push(category);
+                                newCatsFound = true;
+                            }
+                            library.push({ title, url, cover, fav: false, cat: category });
+                            count++;
+                        }
+                    }
+                }
+                
+                if(count > 0) {
+                    if(newCatsFound) {
+                        localStorage.setItem('vicomedia_cats', JSON.stringify(categories));
+                        renderCategories();
+                    }
+                    saveData();
+                    document.getElementById('mList').value = '';
+                    toggleInput('input-list');
+                    alert(`¡Éxito! Se importaron ${count} canales.`);
+                } else {
+                    alert('La web bloqueó la lectura. TRUCO: Abre la URL de la lista en tu navegador, copia todo el texto largo que sale y pégalo aquí.');
+                }
+            } catch (error) {
+                alert('La página bloqueó la conexión. TRUCO: Abre la lista en otra pestaña, copia todo el código de texto y pégalo aquí.');
+            } finally {
+                btn.innerText = originalBtnText;
+            }
+        };
         // --- DETECCIÓN Y CHAT (CORS Y AUTO-DETECCIÓN REVISADOS) ---
         window.detectApiKey = function(key) {
             const prov = document.getElementById('apiProvider'), stat = document.getElementById('apiStatus');
