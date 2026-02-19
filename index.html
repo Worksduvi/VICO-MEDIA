@@ -179,27 +179,27 @@
             <div id="fav-trailers-grid" class="grid"></div>
         </section>
 
-        <section id="view-chat" class="hidden">
+    <section id="view-chat" class="hidden">
             <h2>Chat Inteligente</h2>
             
             <div class="input-box" id="api-box">
-                <label style="font-size:0.8rem; color:var(--primary)">Motor IA:</label>
-                <select id="apiProvider" style="margin-bottom:5px;">
-                    <option value="gemini">Google Gemini (Recomendado)</option>
-                    <option value="groq">Groq (Rápido)</option>
+                <label style="font-size:0.8rem; color:var(--primary)">Motor IA (Auto-detectado):</label>
+                <select id="apiProvider" style="margin-bottom:5px; background:#111; color:#888;">
+                    <option value="gemini">Google Gemini</option>
+                    <option value="groq">Groq</option>
                     <option value="openai">OpenAI (ChatGPT)</option>
                     <option value="deepseek">DeepSeek</option>
                 </select>
-                <input type="password" id="apiKey" placeholder="Tu API Key..." style="margin:0">
-                <button onclick="saveApiKey()" class="btn-neon" style="margin-top:5px; width:100%">Guardar Configuración</button>
-                <p style="font-size:0.65rem; color:#666; margin-top:5px;">Nota: Algunas APIs bloquean conexiones desde navegadores (CORS). Gemini suele ser la más estable aquí.</p>
+                <input type="password" id="apiKey" placeholder="Pega tu API Key (AIza..., gsk_..., sk-...)" style="margin:0" oninput="detectApiKey(this.value)">
+                <button onclick="saveApiKey()" class="btn-neon" style="margin-top:10px; width:100%">Guardar Configuración</button>
+                <p id="apiStatus" style="font-size:0.65rem; color:#666; margin-top:5px; text-align:center;">Pega tu clave para detectar el motor.</p>
             </div>
 
             <div id="chatBox" class="chat-window">
-                <div class="chat-msg msg-ai">VICO: Hola. Soy tu experto en cine multi-API. Introduce tu clave y pregúntame lo que sea.</div>
+                <div class="chat-msg msg-ai">VICO: Hola. Soy tu experto en cine. Pega tu API Key y la detectaré mágicamente.</div>
             </div>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="chatInput" placeholder="Ej: Resumen de Matrix..." style="margin:0">
+                <input type="text" id="chatInput" placeholder="Ej: Resumen de The Batman..." style="margin:0">
                 <button onclick="sendChat()" class="btn-neon"><i data-lucide="send"></i></button>
             </div>
         </section>
