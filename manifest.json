@@ -1,23 +1,23 @@
 {
   "name": "VICO MEDIA",
-  "short_name": "VICO MEDIA",
-  "start_url": "./index.html",
+  "short_name": "VICO",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#00fff7",
-  "description": "Tu biblioteca multimedia inteligente",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "./icon.png",
+      "src": "icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./icon.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
