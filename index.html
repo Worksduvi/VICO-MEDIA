@@ -338,15 +338,69 @@
             else library.unshift({ title: t, url: u, cover: c, fav: false, cat: activeCategory==='Todos'?'':activeCategory });
             saveData(); toggleInput('input-manual');
         };
+        // LECTOR AVANZADO DE LISTAS M3U (Estilo Wiseplay)
         window.importList = function() {
-            const lines = document.getElementById('mList').value.split('\n'); let count = 0;
+            const text = document.getElementById('mList').value;
+            const lines = text.split('\n');
+            let count = 0;
+            let newCatsFound = false;
+
             for(let i=0; i<lines.length; i++) {
-                if(lines[i].trim().startsWith('#EXTINF')) {
-                    let title = lines[i].split(',')[1] || 'Sin Título', url = lines[i+1]?.trim();
-                    if(url && url.startsWith('http')) { library.push({ title, url, cover: '', fav: false, cat: '' }); i++; count++; }
+                let line = lines[i].trim();
+                
+                // Si la línea es información de un canal/video
+                if(line.startsWith('#EXTINF')) {
+                    
+                    // 1. Extraer el Título (Todo lo que está después de la última coma)
+                    let title = line.split(',').pop()?.trim() || 'Canal sin nombre';
+                    
+                    // 2. Extraer la Categoría (group-title="...")
+                    let catMatch = line.match(/group-title="([^"]+)"/i);
+                    let category = catMatch ? catMatch[1].trim() : '';
+                    
+                    // 3. Extraer el Logo/Imagen (tvg-logo="...")
+                    let logoMatch = line.match(/tvg-logo="([^"]+)"/i);
+                    let cover = logoMatch ? logoMatch[1].trim() : '';
+
+                    // 4. Buscar la URL en la siguiente línea
+                    let url = lines[i+1]?.trim();
+
+                    // Si hay URL válida, lo guardamos en la biblioteca
+                    if(url && url.startsWith('http')) {
+                        
+                        // Si la lista trae una categoría nueva, la añadimos al sistema
+                        if(category && !categories.includes(category)) {
+                            categories.push(category);
+                            newCatsFound = true;
+                        }
+
+                        library.push({ 
+                            title: title, 
+                            url: url, 
+                            cover: cover, 
+                            fav: false, 
+                            cat: category 
+                        });
+                        
+                        count++;
+                        i++; // Saltamos la línea de la URL para no leerla dos veces
+                    }
                 }
             }
-            saveData(); toggleInput('input-list'); alert(`Importados ${count} videos.`);
+            
+            // Guardar cambios y actualizar la interfaz
+            if(count > 0) {
+                if(newCatsFound) {
+                    localStorage.setItem('vicomedia_cats', JSON.stringify(categories));
+                    renderCategories(); // Dibuja los nuevos botones verdes de categorías
+                }
+                saveData();
+                document.getElementById('mList').value = ''; // Limpiar caja de texto
+                toggleInput('input-list');
+                alert(`¡Éxito! Se importaron ${count} canales organizados por categorías.`);
+            } else {
+                alert('No se detectaron enlaces válidos. Asegúrate de pegar una lista M3U correcta.');
+            }
         };
         window.toggleFav = function(i) { library[i].fav = !library[i].fav; saveData(); };
         window.deleteItem = function(i) { if(confirm('¿Borrar?')) { library.splice(i, 1); saveData(); } };
