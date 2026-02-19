@@ -562,11 +562,11 @@
             localStorage.setItem('vicomedia_provider', apiProvider);
             alert('Configuración de IA Guardada');
         };
-
-        window.sendChat = async function() {
+window.sendChat = async function() {
             const inp = document.getElementById('chatInput');
             const txt = inp.value;
             if(!txt) return;
+            
             const box = document.getElementById('chatBox');
             box.innerHTML += `<div class="chat-msg msg-user">${txt}</div>`;
             inp.value = ''; box.scrollTop = box.scrollHeight;
@@ -579,44 +579,45 @@
 
             try {
                 let aiText = "";
+                
                 if(apiProvider === 'gemini') {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    // ACTUALIZADO AL MODELO GEMINI MÁS RECIENTE
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                         method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: "Eres un experto en cine. " + txt }] }] })
+                        body: JSON.stringify({ contents: [{ parts: [{ text: "Eres un experto en cine y series. " + txt }] }] })
                     });
                     const data = await res.json();
-                    
-                    // NUEVO: Comprobar si Google envió un error (ej. Key inválida)
-                    if (!res.ok) {
-                        throw new Error(data.error?.message || "Error desconocido de Gemini");
-                    }
-                    
+                    if (!res.ok) throw new Error(data.error?.message || "Error desconocido de Gemini");
                     aiText = data.candidates[0].content.parts[0].text;
                 } else {
                     let endpoint = "https://api.openai.com/v1/chat/completions";
-                    let model = "gpt-3.5-turbo";
-                    if(apiProvider === 'groq') { endpoint = "https://api.groq.com/openai/v1/chat/completions"; model = "llama3-8b-8192"; }
-                    if(apiProvider === 'deepseek') { endpoint = "https://api.deepseek.com/chat/completions"; model = "deepseek-chat"; }
+                    let model = "gpt-4o-mini"; // OpenAI actualizado
+                    
+                    if(apiProvider === 'groq') { 
+                        endpoint = "https://api.groq.com/openai/v1/chat/completions"; 
+                        // ACTUALIZADO AL MODELO GROQ ACTUAL
+                        model = "llama-3.3-70b-versatile"; 
+                    }
+                    if(apiProvider === 'deepseek') { 
+                        endpoint = "https://api.deepseek.com/chat/completions"; 
+                        model = "deepseek-chat"; 
+                    }
 
                     const res = await fetch(endpoint, {
                         method: "POST", headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ messages: [{ role: "system", content: "Eres un experto en cine." }, { role: "user", content: txt }], model: model })
+                        body: JSON.stringify({ messages: [{ role: "system", content: "Eres un experto en cine y series." }, { role: "user", content: txt }], model: model })
                     });
                     
                     const data = await res.json();
-                    
-                    // NUEVO: Comprobar si hay error de Groq/OpenAI
-                    if(!res.ok) {
-                        throw new Error(data.error?.message || "Error de CORS o API Key inválida");
-                    }
+                    if(!res.ok) throw new Error(data.error?.message || "Error de conexión o API Key inválida");
                     
                     aiText = data.choices[0].message.content;
                 }
+                
                 document.getElementById(loadingId).remove();
                 box.innerHTML += `<div class="chat-msg msg-ai">VICO: ${aiText}</div>`;
             } catch(e) {
                 document.getElementById(loadingId).remove();
-                // Ahora mostrará el mensaje EXACTO del servidor
                 box.innerHTML += `<div class="chat-msg msg-error">⚠️ Error: ${e.message}</div>`;
             }
             box.scrollTop = box.scrollHeight;
