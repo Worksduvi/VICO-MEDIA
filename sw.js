@@ -1,4 +1,3 @@
-// HEMOS CAMBIADO A V6 PARA FORZAR LA ACTUALIZACIÓN
 const CACHE_NAME = "vicomedia-v6";
 const urlsToCache = [
   "./",
@@ -11,7 +10,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener("install", event => {
-  self.skipWaiting(); // Obliga a instalar inmediatamente
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(urlsToCache);
@@ -25,7 +24,7 @@ self.addEventListener("activate", event => {
       keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
     ))
   );
-  self.clients.claim(); // Obliga a tomar el control inmediatamente
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
