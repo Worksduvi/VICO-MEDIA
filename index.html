@@ -416,36 +416,28 @@
             modal.classList.remove('hidden');
         };
         window.closePlayer = function() { document.getElementById('videoWrapper').innerHTML = ''; document.getElementById('playerModal').classList.add('hidden'); };
-// LECTOR AVANZADO DE LISTAS M3U (URLs Inteligentes + Lista de Ejemplo)
+// LECTOR AVANZADO DE LISTAS M3U (URLs Inteligentes y Texto)
         window.importList = async function() {
             const inputVal = document.getElementById('mList').value.trim();
+            if(!inputVal) return;
+
+            // Cambiamos el texto del botón para avisar que está descargando
             const btn = document.querySelector('#input-list .btn-neon.alt');
             const originalBtnText = btn.innerText;
-            btn.innerText = "Procesando... ⏳";
+            btn.innerText = "Descargando lista... ⏳";
             
             try {
                 let textToParse = inputVal;
 
-                // MAGIA UX: Si el usuario deja la caja vacía, cargamos una lista de ejemplo garantizada
-                if (!inputVal) {
-                    textToParse = `#EXTM3U
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/NASA_TV_logo.svg/512px-NASA_TV_logo.svg.png" group-title="Ciencia",NASA TV
-https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Red_Bull_TV_logo.svg/512px-Red_Bull_TV_logo.svg.png" group-title="Deportes",Red Bull TV
-https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Bloomberg_Television_logo.svg/512px-Bloomberg_Television_logo.svg.png" group-title="Noticias",Bloomberg
-https://live.bloomberg.tv/hls/live/2056637/us/master.m3u8`;
-                } 
-                // Si es una URL, usamos el mejor proxy anti-CORS (corsproxy.io)
-                else if (inputVal.startsWith('http') && !inputVal.includes('\n')) {
-                    const proxyUrl = "https://corsproxy.io/?"; 
+                // Magia: Si pegaste una URL, la descargamos usando un proxy anti-bloqueos
+                if (inputVal.startsWith('http') && !inputVal.includes('\n')) {
+                    const proxyUrl = "https://api.allorigins.win/raw?url="; 
                     const res = await fetch(proxyUrl + encodeURIComponent(inputVal));
-                    if (!res.ok) throw new Error('Bloqueo de red');
+                    if (!res.ok) throw new Error('No se pudo descargar');
                     textToParse = await res.text();
                 }
 
-                // Normalizamos los saltos de línea para que no falle
-                const lines = textToParse.replace(/\r\n/g, '\n').split('\n');
+                const lines = textToParse.split('\n');
                 let count = 0;
                 let newCatsFound = false;
 
@@ -453,24 +445,24 @@ https://live.bloomberg.tv/hls/live/2056637/us/master.m3u8`;
                     let line = lines[i].trim();
                     
                     if(line.startsWith('#EXTINF')) {
+                        // Extraer datos (Soporta listas complejas como TDTChannels)
                         let title = line.split(',').pop()?.trim() || 'Canal TV';
-                        // Soporta varios formatos de código M3U
-                        let catMatch = line.match(/group-title="([^"]+)"/i) || line.match(/group-title=([^, ]+)/i);
-                        let category = catMatch ? catMatch[1].trim() : 'General';
-                        let logoMatch = line.match(/tvg-logo="([^"]+)"/i) || line.match(/tvg-logo=([^, ]+)/i);
+                        let catMatch = line.match(/group-title="([^"]+)"/i);
+                        let category = catMatch ? catMatch[1].trim() : 'TV General';
+                        let logoMatch = line.match(/tvg-logo="([^"]+)"/i);
                         let cover = logoMatch ? logoMatch[1].trim() : '';
 
+                        // Buscar la URL del canal en las siguientes líneas
                         let url = '';
                         let j = i + 1;
-                        // Buscamos la URL en las siguientes líneas
-                        while(j < lines.length && j < i + 5) {
+                        while(j < lines.length) {
                             let nextLine = lines[j].trim();
                             if(nextLine.startsWith('http')) {
                                 url = nextLine;
-                                i = j; // Saltamos hasta aquí
+                                i = j; // Saltamos hasta esta línea para no leer doble
                                 break;
                             } else if (nextLine.startsWith('#EXTINF')) {
-                                break; 
+                                break; // Chocamos con otro canal, esta no tenía link
                             }
                             j++;
                         }
@@ -494,14 +486,14 @@ https://live.bloomberg.tv/hls/live/2056637/us/master.m3u8`;
                     saveData();
                     document.getElementById('mList').value = '';
                     toggleInput('input-list');
-                    alert(`¡Éxito! Se importaron ${count} canales.`);
+                    alert(`¡Éxito! Se importaron ${count} canales y se organizaron por categorías.`);
                 } else {
-                    alert('La web bloqueó la lectura. TRUCO: Abre la URL de la lista en tu navegador, copia todo el texto largo que sale y pégalo aquí.');
+                    alert('No se encontraron canales válidos. Revisa el enlace.');
                 }
             } catch (error) {
-                alert('La página bloqueó la conexión. TRUCO: Abre la lista en otra pestaña, copia todo el código de texto y pégalo aquí.');
+                alert('Error al descargar la lista. Asegúrate de que el link público sea válido.');
             } finally {
-                btn.innerText = originalBtnText;
+                btn.innerText = originalBtnText; // Restauramos el botón
             }
         };
         // --- DETECCIÓN Y CHAT (CORS Y AUTO-DETECCIÓN REVISADOS) ---
