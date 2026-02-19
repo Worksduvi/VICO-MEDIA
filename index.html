@@ -376,28 +376,56 @@
         window.deleteItem = function(i) { if(confirm('¿Borrar?')) { library.splice(i, 1); saveData(); } };
         function saveData() { localStorage.setItem('vicomedia_lib', JSON.stringify(library)); renderLibrary(); renderFavorites(); }
 
-        const trailers2026 = {
-            action: [ { t:"Avengers: Doomsday", id:"r51cYJZmWuc" }, { t:"The Batman Part II", id:"c4L5n4xN19Y" }, { t:"Mission Impossible 8", id:"NOhDyUmT9z0" }, { t:"Captain America 4", id:"1pHDWnXmK7Y" }, { t:"Mandalorian & Grogu", id:"Gj2sRz_O6Gk" } ],
-            scifi: [ { t:"Supergirl", id:"O-XpM1qgEUE" }, { t:"Avatar 3", id:"cZ7LzE3u7Bw" }, { t:"Dune 3", id:"z2oJ4n3b5k0" }, { t:"Tron: Ares", id:"8tPNgCb_q1I" }, { t:"Mickey 17", id:"osYpGSz_0i4" } ]
+// --- MOTOR DISCOVERY: TRÁILERS DINÁMICOS Y PELIS GRATIS ---
+        const trailerDatabase = {
+            ciencia_ficcion: [ { t:"Avatar: Fire & Ash", id:"cZ7LzE3u7Bw" }, { t:"Dune: Messiah", id:"z2oJ4n3b5k0" }, { t:"Tron: Ares", id:"8tPNgCb_q1I" }, { t:"Mickey 17", id:"osYpGSz_0i4" }, { t:"Supergirl", id:"O-XpM1qgEUE" } ],
+            historia: [ { t:"Gladiator II", id:"4rgYUipGJNo" }, { t:"Oppenheimer", id:"uYPbbksJxIg" }, { t:"Napoleon", id:"OAZWXUkrjPc" }, { t:"Killers of the Flower Moon", id:"EC3MACBDpEA" } ],
+            sagas: [ { t:"Avengers: Doomsday", id:"r51cYJZmWuc" }, { t:"The Batman Part II", id:"c4L5n4xN19Y" }, { t:"Mission Impossible 8", id:"NOhDyUmT9z0" }, { t:"John Wick 5", id:"p_TivLksbOM" } ],
+            familiar: [ { t:"Paddington in Peru", id:"7AofhD3HkOE" }, { t:"Mufasa: The Lion King", id:"o17MF9vnabg" }, { t:"Sonic 3", id:"qSu6i2iFMO0" } ],
+            navidad: [ { t:"Red One", id:"U8WXJqGRQxc" }, { t:"Klaus", id:"taIGZJrsveA" }, { t:"The Grinch", id:"vhn1_ncE1j8" } ],
+            biblicas: [ { t:"The Chosen (Season 4)", id:"_K_M6zT2eG4" }, { t:"Mary", id:"1X6-MhO1O3I" }, { t:"Exodus: Gods and Kings", id:"t-8YsafI5JM" } ],
+            drama: [ { t:"A Complete Unknown", id:"H3c1r0e3wM8" }, { t:"The Iron Claw", id:"8QCAXF1n2vY" }, { t:"Ferrari", id:"KZNnKziPzzM" } ],
+            animacion: [ { t:"Spider-Man: Beyond the Spider-Verse", id:"cqGjhVJWtEg" }, { t:"Toy Story 5", id:"3Z91oT_y0lE" }, { t:"Moana 2", id:"hDZ7y8RP5q4" } ],
+            infantil: [ { t:"Despicable Me 4", id:"qQlr9-rF32A" }, { t:"Inside Out 2", id:"LEjhY15eCx0" }, { t:"Kung Fu Panda 4", id:"_inKs4eeHiI" } ],
+            comedia: [ { t:"Deadpool & Wolverine", id:"73_1biulkYk" }, { t:"Ghostbusters: Frozen Empire", id:"HRjq_rcXpD0" }, { t:"Beetlejuice Beetlejuice", id:"hXZNV1A2m1I" } ],
+            documentales: [ { t:"Planet Earth III", id:"eTGEhP8z2nQ" }, { t:"The Last Dance", id:"PqjGOCN_A8" }, { t:"Free Solo", id:"urRVZ4SW7WU" } ]
         };
-        function renderDiscovery() {
-            const buildHTML = (list) => list.map(v => {
+
+        window.loadTrailers = function() {
+            const selectEl = document.getElementById('trailerCategory');
+            const cat = selectEl.value;
+            const catName = selectEl.options[selectEl.selectedIndex].text;
+            document.getElementById('trailer-section-title').innerText = "Tráilers: " + catName;
+            
+            // Obtener lista y mezclarla aleatoriamente para simular contenido fresco al recargar
+            let list = [...(trailerDatabase[cat] || [])];
+            list.sort(() => Math.random() - 0.5);
+
+            const html = list.map(v => {
                 const isFav = trailerFavs.some(f => f.id === v.id) ? 'active' : '';
-                return `<div class="trailer-card">
+                return `
+                <div class="trailer-card">
                     <button onclick="toggleTrailerFav('${v.id}', '${v.t.replace(/'/g, "\\'")}')" class="mini-btn fav ${isFav}" style="position:absolute; top:5px; right:5px; z-index:10;"><i data-lucide="heart" size="14"></i></button>
                     <a href="https://youtube.com/watch?v=${v.id}" target="_blank" style="text-decoration:none; color:white;">
                         <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg">
                         <div class="trailer-overlay"><i data-lucide="play-circle" size="32" style="color:var(--primary)"></i></div>
                         <div style="padding:8px; font-size:0.75rem;">${v.t}</div>
-                    </a></div>`;
+                    </a>
+                </div>`;
             }).join('');
-            document.getElementById('feed-action').innerHTML = buildHTML(trailers2026.action);
-            document.getElementById('feed-scifi').innerHTML = buildHTML(trailers2026.scifi);
+            
+            document.getElementById('dynamic-trailers').innerHTML = html;
+            if(window.lucide) lucide.createIcons();
+        };
+
+        // Función puente para mantener la compatibilidad al iniciar
+        function renderDiscovery() {
+            loadTrailers();
         }
-        window.toggleTrailerFav = function(id, title) {
-            const index = trailerFavs.findIndex(f => f.id === id);
-            if(index > -1) trailerFavs.splice(index, 1); else trailerFavs.push({id, title});
-            localStorage.setItem('vicomedia_tfavs', JSON.stringify(trailerFavs)); renderDiscovery(); renderFavorites();
+
+        // Búsqueda directa de Películas Gratis
+        window.searchFreeMovies = function() {
+            window.open('https://www.youtube.com/results?search_query=peliculas+completas+en+español+gratis', '_blank');
         };
         window.searchMovieInfo = async function() {
             const query = document.getElementById('searchWiki').value, resDiv = document.getElementById('searchResults');
