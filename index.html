@@ -585,6 +585,12 @@
                         body: JSON.stringify({ contents: [{ parts: [{ text: "Eres un experto en cine. " + txt }] }] })
                     });
                     const data = await res.json();
+                    
+                    // NUEVO: Comprobar si Google envió un error (ej. Key inválida)
+                    if (!res.ok) {
+                        throw new Error(data.error?.message || "Error desconocido de Gemini");
+                    }
+                    
                     aiText = data.candidates[0].content.parts[0].text;
                 } else {
                     let endpoint = "https://api.openai.com/v1/chat/completions";
@@ -596,15 +602,22 @@
                         method: "POST", headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                         body: JSON.stringify({ messages: [{ role: "system", content: "Eres un experto en cine." }, { role: "user", content: txt }], model: model })
                     });
-                    if(!res.ok) throw new Error("CORS o Key inválida.");
+                    
                     const data = await res.json();
+                    
+                    // NUEVO: Comprobar si hay error de Groq/OpenAI
+                    if(!res.ok) {
+                        throw new Error(data.error?.message || "Error de CORS o API Key inválida");
+                    }
+                    
                     aiText = data.choices[0].message.content;
                 }
                 document.getElementById(loadingId).remove();
                 box.innerHTML += `<div class="chat-msg msg-ai">VICO: ${aiText}</div>`;
             } catch(e) {
                 document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="chat-msg msg-error">⚠️ Error API. Se recomienda Gemini en web.</div>`;
+                // Ahora mostrará el mensaje EXACTO del servidor
+                box.innerHTML += `<div class="chat-msg msg-error">⚠️ Error: ${e.message}</div>`;
             }
             box.scrollTop = box.scrollHeight;
         };
