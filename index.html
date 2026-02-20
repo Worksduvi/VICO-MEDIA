@@ -23,7 +23,6 @@
         header { padding: 15px; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); border-bottom: 1px solid var(--primary); position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
         .logo-text { font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px var(--primary); }
         .logo-accent { color: var(--secondary); }
-        .lang-select { background: #111; color: var(--primary); border: 1px solid var(--primary); padding: 5px; border-radius: 4px; font-size: 0.7rem; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(8,8,8,0.95); border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; backdrop-filter: blur(5px); }
         .nav-btn { background: none; border: none; color: #666; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; gap: 4px; cursor: pointer;}
@@ -62,13 +61,15 @@
         .btn-ext { background: transparent; color: var(--secondary); border: 1px solid var(--secondary); }
         .btn-share { background: #0070ba; color: white; }
 
-        .discovery-header { border-left: 4px solid var(--secondary); padding-left: 10px; margin: 20px 0 10px; }
+        .discovery-header { border-left: 4px solid var(--secondary); padding-left: 10px; margin: 20px 0 10px; display: flex; justify-content: space-between; align-items: center; }
         .video-scroll { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; }
         .trailer-card { min-width: 220px; background: #111; border-radius: 8px; overflow: hidden; border: 1px solid #333; position: relative; }
         .trailer-card img { width: 100%; height: 125px; object-fit: cover; }
         .trailer-overlay { position: absolute; top:0; left:0; width:100%; height:125px; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; }
-        .rss-item { padding: 10px; border-bottom: 1px solid #333; font-size: 0.85rem; }
-        .rss-item a { color: var(--primary); text-decoration: none; }
+        
+        .rss-item { padding: 12px; border-bottom: 1px solid #333; font-size: 0.85rem; line-height: 1.4; }
+        .rss-item a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        .rss-date { font-size: 0.65rem; color: #666; margin-top: 4px; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 2000; display: flex; flex-direction: column; }
         .modal-header { padding: 10px; background: #111; border-bottom: 1px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
@@ -91,10 +92,6 @@
 
     <header>
         <div class="logo-text">VICO <span class="logo-accent">MEDIA</span></div>
-        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
-            <option value="es">🇪🇸 ES</option>
-            <option value="en">🇺🇸 EN</option>
-        </select>
     </header>
 
     <main>
@@ -135,7 +132,7 @@
             <div id="library-grid" class="grid"></div>
         </section>
 
-     <section id="view-discovery" class="hidden">
+        <section id="view-discovery" class="hidden">
             <h2 style="color:var(--secondary)">Discovery 2026</h2>
             
             <div class="input-box" style="margin-top:10px;">
@@ -148,46 +145,49 @@
             </div>
             
             <div class="input-box">
-                <h3 style="font-size:0.9rem; margin-top:0"><i data-lucide="film"></i> Explorador de Tráilers</h3>
+                <h3 style="font-size:0.9rem; margin-top:0"><i data-lucide="youtube"></i> Explorador de Tráilers Reales</h3>
                 <select id="trailerCategory" style="margin-bottom:10px; background:#000; border:1px solid var(--secondary); color:var(--secondary);">
-                    <option value="ciencia_ficcion">Ciencia Ficción</option>
-                    <option value="historia">Historia</option>
-                    <option value="sagas">Sagas</option>
-                    <option value="familiar">Familiar</option>
-                    <option value="navidad">Navidad</option>
-                    <option value="biblicas">Bíblicas</option>
-                    <option value="drama">Drama</option>
-                    <option value="animacion">Animación</option>
-                    <option value="infantil">Infantil</option>
-                    <option value="comedia">Comedia</option>
-                    <option value="documentales">Documentales</option>
+                    <option value="Acción">Acción y Adrenalina</option>
+                    <option value="Ciencia Ficción">Ciencia Ficción</option>
+                    <option value="Historia">Historia</option>
+                    <option value="Sagas">Sagas y Franquicias</option>
+                    <option value="Familiar">Familiar</option>
+                    <option value="Navidad">Navidad</option>
+                    <option value="Bíblicas">Bíblicas</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Animación">Animación</option>
+                    <option value="Infantil">Infantil</option>
+                    <option value="Comedia">Comedia</option>
+                    <option value="Documentales">Documentales</option>
                 </select>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="loadTrailers()" class="btn-neon alt" style="flex:1; padding:8px; font-size:0.75rem;"><i data-lucide="refresh-cw"></i> Recargar Tráilers</button>
-                    <button onclick="searchFreeMovies()" class="btn-neon" style="flex:1; padding:8px; font-size:0.75rem; border-color:red; color:white; background:#aa0000;"><i data-lucide="youtube"></i> Pelis Gratis</button>
+                    <button onclick="loadYouTubeTrailers()" class="btn-neon alt" style="flex:1; padding:8px; font-size:0.75rem;"><i data-lucide="refresh-cw"></i> Cargar Tráilers</button>
+                    <button onclick="searchFreeMovies()" class="btn-neon" style="flex:1; padding:8px; font-size:0.75rem; border-color:red; color:white; background:#aa0000;"><i data-lucide="film"></i> Pelis Gratis</button>
                 </div>
             </div>
 
-            <div class="discovery-header"><h3 id="trailer-section-title">Tráilers Recomendados</h3></div>
+            <div class="discovery-header">
+                <h3 id="trailer-section-title">Últimos Tráilers</h3>
+            </div>
             <div class="video-scroll" id="dynamic-trailers">
-                </div>
-
-            <div class="discovery-header"><h3>📰 Cine News (RSS)</h3></div>
-            <div id="rss-feed" style="background:#111; border-radius:8px; border:1px solid #333; max-height:250px; overflow-y:auto;">
-                <p style="padding:10px; color:#666">Cargando noticias...</p>
+                <p style="color:#555; padding:10px; font-size:0.8rem;">Selecciona una categoría y dale a Cargar Tráilers.</p>
             </div>
-        </section>
-                <div id="searchResults" style="margin-top:10px; font-size:0.8rem; color:#aaa;"></div>
+
+            <div class="discovery-header">
+                <h3>📰 Cine News</h3>
+                <button onclick="toggleInput('rss-settings')" class="btn-sm btn-web"><i data-lucide="settings" size="12"></i> Fuentes RSS</button>
             </div>
             
-            <div class="discovery-header"><h3>🔥 Blockbusters 2026</h3></div>
-            <div class="video-scroll" id="feed-action"></div>
+            <div id="rss-settings" class="input-box hidden" style="margin-bottom:10px;">
+                <h4 style="margin-top:0; font-size:0.8rem;">Tus Fuentes de Noticias</h4>
+                <div id="rss-list" style="margin-bottom:10px;"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="newRssUrl" placeholder="URL del RSS..." style="margin:0;">
+                    <button onclick="addRss()" class="btn-neon">Añadir</button>
+                </div>
+            </div>
 
-            <div class="discovery-header"><h3>🛸 Sci-Fi & Fantasía</h3></div>
-            <div class="video-scroll" id="feed-scifi"></div>
-
-            <div class="discovery-header"><h3>📰 Cine News (RSS)</h3></div>
-            <div id="rss-feed" style="background:#111; border-radius:8px; border:1px solid #333; max-height:250px; overflow-y:auto;">
+            <div id="rss-feed" style="background:#111; border-radius:8px; border:1px solid #333; max-height:300px; overflow-y:auto;">
                 <p style="padding:10px; color:#666">Cargando noticias...</p>
             </div>
         </section>
@@ -277,14 +277,22 @@
         let trailerFavs = JSON.parse(localStorage.getItem('vicomedia_tfavs')) || [];
         let apiKey = localStorage.getItem('vicomedia_apikey') || '';
         let apiProvider = localStorage.getItem('vicomedia_provider') || 'gemini';
-        let defaultCategories = ["Acción", "Ciencia Ficción", "Comedia", "Drama", "Terror", "Thriller", "Romance", "Fantasía", "Animación", "Documental", "Aventura", "Crimen"];
+        let defaultCategories = ["Acción", "Ciencia Ficción", "Historia", "Sagas", "Familiar", "Navidad", "Bíblicas", "Drama", "Animación", "Infantil", "Comedia", "Documentales"];
         let categories = JSON.parse(localStorage.getItem('vicomedia_cats')) || defaultCategories;
         let activeCategory = 'Todos';
+
+        // Lógica RSS
+        let rssSources = JSON.parse(localStorage.getItem('vicomedia_rss')) || [
+            'https://www.espinof.com/rss',
+            'https://www.cinemascomics.com/feed'
+        ];
 
         window.addEventListener('load', () => {
             document.getElementById('apiKey').value = apiKey;
             document.getElementById('apiProvider').value = apiProvider;
-            renderCategories(); renderLibrary(); renderDiscovery(); loadRSS();
+            renderCategories(); renderLibrary(); 
+            loadYouTubeTrailers(); // Carga tráilers de Acción al iniciar
+            renderRssList(); loadRSS();
             if(localStorage.getItem('vicomedia_theme') === 'matrix') document.body.classList.add('matrix-mode');
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
             lucide.createIcons();
@@ -338,7 +346,7 @@
                     <div class="card-title">${item.title}</div>
                     <select class="cat-select" onchange="changeItemCat(${index}, this.value)">${catOptions}</select>
                     <div class="action-grid">
-                        <button class="btn-sm btn-play" onclick="playMedia('${safeUrl}', '${safeTitle}', 'internal')"><i data-lucide="play" size="12"></i> Play Now</button>
+                        <button class="btn-sm btn-play" onclick="playMedia('${safeUrl}', '${safeTitle}', 'internal')"><i data-lucide="play" size="12"></i> Play</button>
                         <button class="btn-sm btn-web" onclick="playMedia('${safeUrl}', '${safeTitle}', 'iframe')"><i data-lucide="globe" size="12"></i> Iframe</button>
                         <button class="btn-sm btn-ext" onclick="window.open('${safeUrl}', '_blank')"><i data-lucide="external-link" size="12"></i> Externo</button>
                         <button class="btn-sm btn-share" onclick="shareUrl('${safeUrl}')"><i data-lucide="share-2" size="12"></i> Share</button>
@@ -349,7 +357,7 @@
         }
 
         window.shareUrl = function(url) {
-            if (navigator.share) navigator.share({ title: 'Reproducir', url: url }).catch(console.error);
+            if (navigator.share) navigator.share({ title: 'Reproducir Video', url: url }).catch(console.error);
             else { alert("Usa VLC, UPlayer o Wiseplay para Android."); window.open(url, '_blank'); }
         };
         window.changeItemCat = function(index, newCat) { library[index].cat = newCat; saveData(); };
@@ -372,61 +380,63 @@
             saveData(); toggleInput('input-manual');
         };
         
+        // Lector Inteligente M3U
+        window.importList = async function() {
+            const inputVal = document.getElementById('mList').value.trim();
+            const btn = document.querySelector('#input-list .btn-neon.alt');
+            const originalBtnText = btn.innerText;
+            btn.innerText = "Procesando... ⏳";
+            
+            try {
+                let textToParse = inputVal;
+                if (!inputVal) {
+                    textToParse = `#EXTM3U\n#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/NASA_TV_logo.svg/512px-NASA_TV_logo.svg.png" group-title="Ciencia",NASA TV\nhttps://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8\n#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Red_Bull_TV_logo.svg/512px-Red_Bull_TV_logo.svg.png" group-title="Deportes",Red Bull TV\nhttps://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8\n#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Bloomberg_Television_logo.svg/512px-Bloomberg_Television_logo.svg.png" group-title="Noticias",Bloomberg\nhttps://live.bloomberg.tv/hls/live/2056637/us/master.m3u8`;
+                } else if (inputVal.startsWith('http') && !inputVal.includes('\n')) {
+                    const proxyUrl = "https://corsproxy.io/?"; 
+                    const res = await fetch(proxyUrl + encodeURIComponent(inputVal));
+                    if (!res.ok) throw new Error('Bloqueo');
+                    textToParse = await res.text();
+                }
+
+                const lines = textToParse.replace(/\r\n/g, '\n').split('\n');
+                let count = 0, newCatsFound = false;
+
+                for(let i=0; i<lines.length; i++) {
+                    let line = lines[i].trim();
+                    if(line.startsWith('#EXTINF')) {
+                        let title = line.split(',').pop()?.trim() || 'Canal';
+                        let catMatch = line.match(/group-title="([^"]+)"/i) || line.match(/group-title=([^, ]+)/i);
+                        let category = catMatch ? catMatch[1].trim() : 'General';
+                        let logoMatch = line.match(/tvg-logo="([^"]+)"/i) || line.match(/tvg-logo=([^, ]+)/i);
+                        let cover = logoMatch ? logoMatch[1].trim() : '';
+
+                        let url = '', j = i + 1;
+                        while(j < lines.length && j < i + 5) {
+                            let nextLine = lines[j].trim();
+                            if(nextLine.startsWith('http')) { url = nextLine; i = j; break; } 
+                            else if (nextLine.startsWith('#EXTINF')) { break; }
+                            j++;
+                        }
+                        if(url) {
+                            if(category && !categories.includes(category)) { categories.push(category); newCatsFound = true; }
+                            library.push({ title, url, cover, fav: false, cat: category }); count++;
+                        }
+                    }
+                }
+                if(count > 0) {
+                    if(newCatsFound) { localStorage.setItem('vicomedia_cats', JSON.stringify(categories)); renderCategories(); }
+                    saveData(); document.getElementById('mList').value = ''; toggleInput('input-list');
+                    alert(`¡Importados ${count} canales!`);
+                } else alert('No se pudo leer. Truco: Pega el texto M3U completo.');
+            } catch (error) { alert('URL bloqueada. Truco: Pega el código de texto M3U en lugar del link.'); } 
+            finally { btn.innerText = originalBtnText; }
+        };
+
         window.toggleFav = function(i) { library[i].fav = !library[i].fav; saveData(); };
         window.deleteItem = function(i) { if(confirm('¿Borrar?')) { library.splice(i, 1); saveData(); } };
         function saveData() { localStorage.setItem('vicomedia_lib', JSON.stringify(library)); renderLibrary(); renderFavorites(); }
 
-// --- MOTOR DISCOVERY: TRÁILERS DINÁMICOS Y PELIS GRATIS ---
-        const trailerDatabase = {
-            ciencia_ficcion: [ { t:"Avatar: Fire & Ash", id:"cZ7LzE3u7Bw" }, { t:"Dune: Messiah", id:"z2oJ4n3b5k0" }, { t:"Tron: Ares", id:"8tPNgCb_q1I" }, { t:"Mickey 17", id:"osYpGSz_0i4" }, { t:"Supergirl", id:"O-XpM1qgEUE" } ],
-            historia: [ { t:"Gladiator II", id:"4rgYUipGJNo" }, { t:"Oppenheimer", id:"uYPbbksJxIg" }, { t:"Napoleon", id:"OAZWXUkrjPc" }, { t:"Killers of the Flower Moon", id:"EC3MACBDpEA" } ],
-            sagas: [ { t:"Avengers: Doomsday", id:"r51cYJZmWuc" }, { t:"The Batman Part II", id:"c4L5n4xN19Y" }, { t:"Mission Impossible 8", id:"NOhDyUmT9z0" }, { t:"John Wick 5", id:"p_TivLksbOM" } ],
-            familiar: [ { t:"Paddington in Peru", id:"7AofhD3HkOE" }, { t:"Mufasa: The Lion King", id:"o17MF9vnabg" }, { t:"Sonic 3", id:"qSu6i2iFMO0" } ],
-            navidad: [ { t:"Red One", id:"U8WXJqGRQxc" }, { t:"Klaus", id:"taIGZJrsveA" }, { t:"The Grinch", id:"vhn1_ncE1j8" } ],
-            biblicas: [ { t:"The Chosen (Season 4)", id:"_K_M6zT2eG4" }, { t:"Mary", id:"1X6-MhO1O3I" }, { t:"Exodus: Gods and Kings", id:"t-8YsafI5JM" } ],
-            drama: [ { t:"A Complete Unknown", id:"H3c1r0e3wM8" }, { t:"The Iron Claw", id:"8QCAXF1n2vY" }, { t:"Ferrari", id:"KZNnKziPzzM" } ],
-            animacion: [ { t:"Spider-Man: Beyond the Spider-Verse", id:"cqGjhVJWtEg" }, { t:"Toy Story 5", id:"3Z91oT_y0lE" }, { t:"Moana 2", id:"hDZ7y8RP5q4" } ],
-            infantil: [ { t:"Despicable Me 4", id:"qQlr9-rF32A" }, { t:"Inside Out 2", id:"LEjhY15eCx0" }, { t:"Kung Fu Panda 4", id:"_inKs4eeHiI" } ],
-            comedia: [ { t:"Deadpool & Wolverine", id:"73_1biulkYk" }, { t:"Ghostbusters: Frozen Empire", id:"HRjq_rcXpD0" }, { t:"Beetlejuice Beetlejuice", id:"hXZNV1A2m1I" } ],
-            documentales: [ { t:"Planet Earth III", id:"eTGEhP8z2nQ" }, { t:"The Last Dance", id:"PqjGOCN_A8" }, { t:"Free Solo", id:"urRVZ4SW7WU" } ]
-        };
-
-        window.loadTrailers = function() {
-            const selectEl = document.getElementById('trailerCategory');
-            const cat = selectEl.value;
-            const catName = selectEl.options[selectEl.selectedIndex].text;
-            document.getElementById('trailer-section-title').innerText = "Tráilers: " + catName;
-            
-            // Obtener lista y mezclarla aleatoriamente para simular contenido fresco al recargar
-            let list = [...(trailerDatabase[cat] || [])];
-            list.sort(() => Math.random() - 0.5);
-
-            const html = list.map(v => {
-                const isFav = trailerFavs.some(f => f.id === v.id) ? 'active' : '';
-                return `
-                <div class="trailer-card">
-                    <button onclick="toggleTrailerFav('${v.id}', '${v.t.replace(/'/g, "\\'")}')" class="mini-btn fav ${isFav}" style="position:absolute; top:5px; right:5px; z-index:10;"><i data-lucide="heart" size="14"></i></button>
-                    <a href="https://youtube.com/watch?v=${v.id}" target="_blank" style="text-decoration:none; color:white;">
-                        <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg">
-                        <div class="trailer-overlay"><i data-lucide="play-circle" size="32" style="color:var(--primary)"></i></div>
-                        <div style="padding:8px; font-size:0.75rem;">${v.t}</div>
-                    </a>
-                </div>`;
-            }).join('');
-            
-            document.getElementById('dynamic-trailers').innerHTML = html;
-            if(window.lucide) lucide.createIcons();
-        };
-
-        // Función puente para mantener la compatibilidad al iniciar
-        function renderDiscovery() {
-            loadTrailers();
-        }
-
-        // Búsqueda directa de Películas Gratis
-        window.searchFreeMovies = function() {
-            window.open('https://www.youtube.com/results?search_query=peliculas+completas+en+español+gratis', '_blank');
-        };
+        // --- BÚSQUEDA Y TRÁILERS (NUEVO MOTOR YOUTUBE) ---
         window.searchMovieInfo = async function() {
             const query = document.getElementById('searchWiki').value, resDiv = document.getElementById('searchResults');
             if(!query) return; resDiv.innerHTML = "Buscando...";
@@ -437,13 +447,123 @@
                 else resDiv.innerHTML = `<strong>${data.query.pages[pageId].title}</strong>: <br> ${data.query.pages[pageId].extract.substring(0, 300)}... <a href="https://es.wikipedia.org/wiki/${encodeURIComponent(data.query.pages[pageId].title)}" target="_blank" style="color:var(--primary)">Ver más</a>`;
             } catch(e) { resDiv.innerHTML = "Error."; }
         };
-        async function loadRSS() {
+
+        window.searchFreeMovies = function() {
+            window.open('https://www.youtube.com/results?search_query=peliculas+completas+en+español+gratis', '_blank');
+        };
+
+        window.loadYouTubeTrailers = async function() {
+            const selectEl = document.getElementById('trailerCategory');
+            const catName = selectEl.options[selectEl.selectedIndex].text;
+            document.getElementById('trailer-section-title').innerText = "Tráilers: " + catName;
+            const container = document.getElementById('dynamic-trailers');
+            
+            container.innerHTML = '<p style="color:var(--primary); padding:10px;"><i data-lucide="loader" class="lucide-spin"></i> Buscando en YouTube...</p>';
+            if(window.lucide) lucide.createIcons();
+
             try {
-                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://www.ecartelera.com/rss/noticias.xml')}`);
-                const data = await res.json();
-                if(data.items) document.getElementById('rss-feed').innerHTML = data.items.slice(0,5).map(i => `<div class="rss-item"><a href="${i.link}" target="_blank">🎬 ${i.title}</a></div>`).join('');
-            } catch(e) { document.getElementById('rss-feed').innerHTML = "<p style='color:red'>Error RSS.</p>"; }
+                // Scraping Inteligente y Legal usando el Proxy para evitar CORS
+                const query = encodeURIComponent(`trailer oficial pelicula ${catName} 2026`);
+                const res = await fetch(`https://corsproxy.io/?https://www.youtube.com/results?search_query=${query}`);
+                const html = await res.text();
+
+                const videos = [];
+                // Regex avanzado para encontrar los IDs y Títulos dentro del código de YouTube
+                const regex = /"videoRenderer":\{"videoId":"([^"]+)".*?"title":\{"runs":\[\{"text":"([^"]+)"/g;
+                let match;
+                
+                while ((match = regex.exec(html)) !== null && videos.length < 15) {
+                    if(!videos.some(v => v.id === match[1])) {
+                        // Limpiamos los caracteres raros del título
+                        let cleanTitle = match[2].replace(/\\u0026/g, '&').replace(/\\"/g, '"');
+                        videos.push({ id: match[1], t: cleanTitle });
+                    }
+                }
+
+                if(videos.length > 0) {
+                    container.innerHTML = videos.map(v => {
+                        const isFav = trailerFavs.some(f => f.id === v.id) ? 'active' : '';
+                        return `<div class="trailer-card">
+                            <button onclick="toggleTrailerFav('${v.id}', '${v.t.replace(/'/g, "\\'")}')" class="mini-btn fav ${isFav}" style="position:absolute; top:5px; right:5px; z-index:10;"><i data-lucide="heart" size="14"></i></button>
+                            <a href="https://youtube.com/watch?v=${v.id}" target="_blank" style="text-decoration:none; color:white;">
+                                <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg">
+                                <div class="trailer-overlay"><i data-lucide="play-circle" size="32" style="color:var(--primary)"></i></div>
+                                <div style="padding:8px; font-size:0.75rem;">${v.t}</div>
+                            </a></div>`;
+                    }).join('');
+                } else {
+                    throw new Error("No se encontraron vídeos");
+                }
+            } catch(e) {
+                container.innerHTML = '<p style="color:red; padding:10px;">Error al conectar con YouTube. El proxy podría estar saturado.</p>';
+            }
+            if(window.lucide) lucide.createIcons();
+        };
+
+        window.toggleTrailerFav = function(id, title) {
+            const index = trailerFavs.findIndex(f => f.id === id);
+            if(index > -1) trailerFavs.splice(index, 1); else trailerFavs.push({id, title});
+            localStorage.setItem('vicomedia_tfavs', JSON.stringify(trailerFavs)); loadYouTubeTrailers(); renderFavorites();
+        };
+
+        // --- SISTEMA RSS EDITABLE ---
+        function renderRssList() {
+            const listDiv = document.getElementById('rss-list');
+            listDiv.innerHTML = rssSources.map((url, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#222; padding:8px; margin-bottom:5px; border-radius:4px; font-size:0.75rem;">
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">${url}</span>
+                    <button onclick="deleteRss(${i})" style="color:red; background:none; border:none; cursor:pointer;"><i data-lucide="trash" size="14"></i></button>
+                </div>
+            `).join('');
+            if(window.lucide) lucide.createIcons();
         }
+
+        window.addRss = function() {
+            const val = document.getElementById('newRssUrl').value.trim();
+            if(val && !rssSources.includes(val)) {
+                rssSources.push(val);
+                localStorage.setItem('vicomedia_rss', JSON.stringify(rssSources));
+                document.getElementById('newRssUrl').value = '';
+                renderRssList(); loadRSS();
+            }
+        };
+
+        window.deleteRss = function(i) {
+            rssSources.splice(i, 1);
+            localStorage.setItem('vicomedia_rss', JSON.stringify(rssSources));
+            renderRssList(); loadRSS();
+        };
+
+        window.loadRSS = async function() {
+            const rssDiv = document.getElementById('rss-feed');
+            rssDiv.innerHTML = "<p style='padding:10px;color:var(--primary)'>Descargando últimas noticias...</p>";
+            let allItems = [];
+
+            try {
+                for(let url of rssSources) {
+                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+                    const data = await res.json();
+                    if(data.items) allItems = allItems.concat(data.items);
+                }
+                
+                // Ordenar por fecha (las más nuevas primero)
+                allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+                
+                if(allItems.length > 0) {
+                    rssDiv.innerHTML = allItems.slice(0, 15).map(i => `
+                        <div class="rss-item">
+                            <a href="${i.link}" target="_blank">📰 ${i.title}</a>
+                            <div class="rss-date">${i.pubDate.split(' ')[0]}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    rssDiv.innerHTML = "<p style='padding:10px;color:#666'>No hay noticias recientes.</p>";
+                }
+            } catch(e) { 
+                rssDiv.innerHTML = "<p style='padding:10px;color:red'>Error cargando RSS. Revisa tus enlaces.</p>"; 
+            }
+        };
+
         function renderFavorites() {
             const grid = document.getElementById('fav-grid'); grid.innerHTML = '';
             library.filter(i => i.fav).forEach(item => grid.appendChild(createCard(item, library.indexOf(item))));
@@ -477,87 +597,8 @@
             modal.classList.remove('hidden');
         };
         window.closePlayer = function() { document.getElementById('videoWrapper').innerHTML = ''; document.getElementById('playerModal').classList.add('hidden'); };
-// LECTOR AVANZADO DE LISTAS M3U (URLs Inteligentes y Texto)
-        window.importList = async function() {
-            const inputVal = document.getElementById('mList').value.trim();
-            if(!inputVal) return;
 
-            // Cambiamos el texto del botón para avisar que está descargando
-            const btn = document.querySelector('#input-list .btn-neon.alt');
-            const originalBtnText = btn.innerText;
-            btn.innerText = "Descargando lista... ⏳";
-            
-            try {
-                let textToParse = inputVal;
-
-                // Magia: Si pegaste una URL, la descargamos usando un proxy anti-bloqueos
-                if (inputVal.startsWith('http') && !inputVal.includes('\n')) {
-                    const proxyUrl = "https://api.allorigins.win/raw?url="; 
-                    const res = await fetch(proxyUrl + encodeURIComponent(inputVal));
-                    if (!res.ok) throw new Error('No se pudo descargar');
-                    textToParse = await res.text();
-                }
-
-                const lines = textToParse.split('\n');
-                let count = 0;
-                let newCatsFound = false;
-
-                for(let i=0; i<lines.length; i++) {
-                    let line = lines[i].trim();
-                    
-                    if(line.startsWith('#EXTINF')) {
-                        // Extraer datos (Soporta listas complejas como TDTChannels)
-                        let title = line.split(',').pop()?.trim() || 'Canal TV';
-                        let catMatch = line.match(/group-title="([^"]+)"/i);
-                        let category = catMatch ? catMatch[1].trim() : 'TV General';
-                        let logoMatch = line.match(/tvg-logo="([^"]+)"/i);
-                        let cover = logoMatch ? logoMatch[1].trim() : '';
-
-                        // Buscar la URL del canal en las siguientes líneas
-                        let url = '';
-                        let j = i + 1;
-                        while(j < lines.length) {
-                            let nextLine = lines[j].trim();
-                            if(nextLine.startsWith('http')) {
-                                url = nextLine;
-                                i = j; // Saltamos hasta esta línea para no leer doble
-                                break;
-                            } else if (nextLine.startsWith('#EXTINF')) {
-                                break; // Chocamos con otro canal, esta no tenía link
-                            }
-                            j++;
-                        }
-
-                        if(url) {
-                            if(category && !categories.includes(category)) {
-                                categories.push(category);
-                                newCatsFound = true;
-                            }
-                            library.push({ title, url, cover, fav: false, cat: category });
-                            count++;
-                        }
-                    }
-                }
-                
-                if(count > 0) {
-                    if(newCatsFound) {
-                        localStorage.setItem('vicomedia_cats', JSON.stringify(categories));
-                        renderCategories();
-                    }
-                    saveData();
-                    document.getElementById('mList').value = '';
-                    toggleInput('input-list');
-                    alert(`¡Éxito! Se importaron ${count} canales y se organizaron por categorías.`);
-                } else {
-                    alert('No se encontraron canales válidos. Revisa el enlace.');
-                }
-            } catch (error) {
-                alert('Error al descargar la lista. Asegúrate de que el link público sea válido.');
-            } finally {
-                btn.innerText = originalBtnText; // Restauramos el botón
-            }
-        };
-        // --- DETECCIÓN Y CHAT (CORS Y AUTO-DETECCIÓN REVISADOS) ---
+        // --- DETECCIÓN Y CHAT ---
         window.detectApiKey = function(key) {
             const prov = document.getElementById('apiProvider'), stat = document.getElementById('apiStatus');
             if(key.startsWith('AIza')) { prov.value = 'gemini'; stat.innerHTML = '<span style="color:var(--primary)">✅ Gemini detectada.</span>'; }
@@ -594,7 +635,6 @@
                 } else {
                     let endpoint = "https://api.openai.com/v1/chat/completions", model = "gpt-4o-mini";
                     
-                    // PROXY CORS APLICADO A GROQ
                     if(apiProvider === 'groq') { 
                         endpoint = "https://corsproxy.io/?https://api.groq.com/openai/v1/chat/completions"; 
                         model = "llama-3.3-70b-versatile"; 
@@ -634,4 +674,4 @@
         };
     </script>
 </body>
-</html> 
+        </html>
